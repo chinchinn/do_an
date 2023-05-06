@@ -1,0 +1,65 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-image: url('../../images/Background-image.png');
+    background-size: cover;
+    -webkit-background-size: cover;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.wrapper {
+    width: 400px;
+    height: 380px;
+    color: #000000;
+    padding: 60px 30px;
+    background: #fff;
+    box-sizing: border-box;
+
+
+}
+
+h1 {
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+    font-size: 22px;
+    color: #000000;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.wrapper input,
+.wrapper button {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.wrapper input[type=text],
+.wrapper input[type=password] {
+    border: none;
+    border-bottom: 1px solid #ddd;
+
+    outline: none;
+    height: 30px;
+    font-size: 16px;
+    opacity: 1;
+    color: #ccc;
+}
+
+.wrapper button[type=submit] {
+    border: none;
+    outline: none;
+    height: 40px;
+
+    font-size: 14px;
+}
+
+.wrapper button[type=submit]:hover {
+    background-color: #000000;
+    color: #fff;
+    cursor: pointer;
+}
