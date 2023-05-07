@@ -96,7 +96,7 @@ class TotalCart extends Component {
                 guess: this.state.dataForm.displayname,
                 phone: this.state.dataForm.phone,
                 email: this.state.dataForm.email,
-                total: this.props.props.total + this.state.dataForm.feeShip,
+                total: this.props.total + this.state.dataForm.feeShip,
                 feeShip: this.state.dataForm.feeShip,
                 address: this.state.dataForm.address,
 
@@ -200,7 +200,7 @@ class TotalCart extends Component {
                                 feeShip={feeShip}
                                 customer={customerItem}
                                 note={note}
-                                isSubmit = {true}
+                                isSubmit={true}
 
                             >
                             </ModalViewOrderDetail> : null

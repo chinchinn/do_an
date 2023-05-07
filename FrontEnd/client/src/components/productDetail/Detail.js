@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import empty from '../../images/empty.jpg';
 import './detail.css';
-import { Tag, notification, Skeleton, Descriptions, Badge, Rate } from 'antd';
+import { Tag, notification, Skeleton, Descriptions, Badge, Rate, Input } from 'antd';
 import { PlusOutlined, MinusOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import { addToCart } from '../../action/cartsAction';
@@ -10,6 +10,7 @@ import * as parsePriceForSale from '../../helper/parsePriceForSale';
 import { colors } from '../../utils/colors';
 import { sizes } from '../../utils/sizes';
 import { TranslateColor } from '../../utils/translate';
+
 
 
 class Detail extends Component {
@@ -72,7 +73,7 @@ class Detail extends Component {
         debugger;
         const { product, isMounted, mainImage } = this.state;
 
- ;
+        ;
         // mảng tạm chứa image bù vào cho đủ 5 image
         let emptyImage = [];
         const renderEmptyImages = (length) => {
@@ -148,8 +149,8 @@ class Detail extends Component {
                         </div>
                         <div className="title-detail-item">
                             <span className="title-detail"><b>Giá thị trường:</b></span><span style={
-                              
-                                product.sale === 0 ?  { fontSize: '18px' } : { fontSize: '18px', textDecoration: 'line-through' }}>
+
+                                product.sale === 0 ? { fontSize: '18px' } : { fontSize: '18px', textDecoration: 'line-through' }}>
                                 {parsePriceForSale.parsePrice(product.price) || 0}<b> đ</b></span>
                         </div>
                         <div className="title-detail-item">
@@ -165,6 +166,22 @@ class Detail extends Component {
                                     <PlusOutlined max={product.amount}></PlusOutlined>
                                 </div>
                             </div>
+                        </div>
+                        <div className="title-detail-item">
+                            <span className="title-detail"><b>Dung tích:</b></span><span style={{ fontSize: '18px' }}>
+                                <div style={{ position: 'relative' }}>
+                                    <div style=
+                                        {{
+                                            position: 'relative',
+                                            overflow: 'hidden',
+                                            borderRadius: '4px'
+                                        }}
+                                        className='swatch-element'
+                                    ><input style={{
+                                        width: '100%', height: '100%', opacity: '0', position: 'absolute', zIndex: 1, top: 0, left: 0,
+                                        cursor: 'pointer'
+                                    }} type='radio' name='capacity' value={product.capacity + "ml"} checked />
+                                        <label for="capacity">{product.capacity + "ml"}</label></div></div><b></b></span>
                         </div>
                         <div className="title-detail-item">
                             <span className="title-detail"><b>Số lượng hàng còn lại:</b></span><span style={{ fontSize: '18px' }}>
