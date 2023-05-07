@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace server.Migrations
 {
-    public partial class first : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -77,7 +77,11 @@ namespace server.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     name = table.Column<string>(nullable: false),
-                    status = table.Column<int>(nullable: false)
+                    status = table.Column<int>(nullable: false),
+                    phoneNumber = table.Column<string>(nullable: true),
+                    address = table.Column<string>(nullable: true),
+                    code = table.Column<string>(nullable: true),
+                    email = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -261,8 +265,8 @@ namespace server.Migrations
                     description = table.Column<string>(nullable: true),
                     rating = table.Column<int>(nullable: true),
                     status = table.Column<int>(nullable: false),
-                    size = table.Column<int>(nullable: true),
-                    color = table.Column<int>(nullable: true),
+                    code = table.Column<string>(nullable: true),
+                    capacity = table.Column<int>(nullable: false),
                     amount = table.Column<int>(nullable: false),
                     viewCount = table.Column<int>(nullable: false),
                     categoryId = table.Column<int>(nullable: true),
@@ -401,14 +405,14 @@ namespace server.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "CreationDate", "Description", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("078269d8-1a12-4592-b92e-7ff1a876a5f2"), "9a2c5565-e1c9-4a7f-b920-d85541a55f99", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Administrator role", "Admin", "Admin" },
-                    { new Guid("6d9186ba-2cd6-4b6c-b729-4e605de1019f"), "612d89bf-d2c8-44cf-85c0-8a3bd2b4bdf7", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User role", "User", "User" }
+                    { new Guid("078269d8-1a12-4592-b92e-7ff1a876a5f2"), "5a80840c-797b-4e87-8f9a-6a8780b51bb7", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Administrator role", "Admin", "Admin" },
+                    { new Guid("6d9186ba-2cd6-4b6c-b729-4e605de1019f"), "5d58dc2c-6b0c-4d8b-af61-253e86aa88d5", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User role", "User", "User" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName", "address", "avatar", "birthDay", "displayname", "gender", "phone", "status" },
-                values: new object[] { new Guid("4557893f-1f56-4b6f-bb3b-caefd62c8c49"), 0, "74073ed5-07df-4402-a0df-11aadf33eae7", "luuvututrinh58@gmail.com", true, false, null, "some-admin-email@nonce.fake", "admin", "AQAAAAEAACcQAAAAEI4OaOzTALmeh0hRZ98SxSfA2zEKoVmFzTwE0RehsDBc0s82+b6K4FzC7As6Xo+E2A==", null, false, "", false, "admin", null, null, new DateTime(1998, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", false, null, 1 });
+                values: new object[] { new Guid("4557893f-1f56-4b6f-bb3b-caefd62c8c49"), 0, "7a07babc-016c-404c-855c-79446ac61ded", "luuvututrinh58@gmail.com", true, false, null, "some-admin-email@nonce.fake", "admin", "AQAAAAEAACcQAAAAEGycW+IyT5IN6Vl6p98Wf1tSiGJ0zp1rwJxv84CckA442x2PVHbhKK21tJ23eiWpjA==", null, false, "", false, "admin", null, null, new DateTime(1998, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", false, null, 1 });
 
             migrationBuilder.InsertData(
                 table: "categories",
@@ -423,14 +427,14 @@ namespace server.Migrations
 
             migrationBuilder.InsertData(
                 table: "providers",
-                columns: new[] { "id", "name", "status" },
+                columns: new[] { "id", "address", "code", "email", "name", "phoneNumber", "status" },
                 values: new object[,]
                 {
-                    { 1, "Việt Tiến", 0 },
-                    { 2, "Cty May Sông Hồng", 0 },
-                    { 3, "Cty May Nhà Bè", 0 },
-                    { 4, "Cty Giditex", 0 },
-                    { 5, "Cty Vinatex", 0 }
+                    { 1, null, null, null, "Việt Tiến", null, 0 },
+                    { 2, null, null, null, "Cty May Sông Hồng", null, 0 },
+                    { 3, null, null, null, "Cty May Nhà Bè", null, 0 },
+                    { 4, null, null, null, "Cty Giditex", null, 0 },
+                    { 5, null, null, null, "Cty Vinatex", null, 0 }
                 });
 
             migrationBuilder.InsertData(
@@ -440,14 +444,14 @@ namespace server.Migrations
 
             migrationBuilder.InsertData(
                 table: "products",
-                columns: new[] { "id", "amount", "categoryId", "color", "description", "importPrice", "name", "price", "providerId", "rating", "sale", "size", "status", "viewCount" },
+                columns: new[] { "id", "amount", "capacity", "categoryId", "code", "description", "importPrice", "name", "price", "providerId", "rating", "sale", "status", "viewCount" },
                 values: new object[,]
                 {
-                    { 1, 0, 1, 6, "mô tả sản phẩm 1", 100000, "Áo sơ mi", 150000, 1, 5, 0, 2, 0, 0 },
-                    { 2, 0, 1, 2, "mô tả sản phẩm 2", 80000, "Áo sơ mi tay ngắn", 120000, 2, 5, 0, 0, 0, 0 },
-                    { 3, 0, 2, 6, "mô tả sản phẩm 3", 200000, "Quần tây", 250000, 3, 5, 0, 2, 0, 0 },
-                    { 4, 0, 3, 1, "mô tả sản phẩm 4", 50000, "Áo thun", 75000, 4, 5, 0, 2, 0, 0 },
-                    { 5, 0, 4, 7, "mô tả sản phẩm 5", 180000, "Quần kaki", 220000, 5, 5, 0, 2, 0, 0 }
+                    { 1, 0, 0, 1, null, "mô tả sản phẩm 1", 100000, "Áo sơ mi", 150000, 1, 5, 0, 0, 0 },
+                    { 2, 0, 0, 1, null, "mô tả sản phẩm 2", 80000, "Áo sơ mi tay ngắn", 120000, 2, 5, 0, 0, 0 },
+                    { 3, 0, 0, 2, null, "mô tả sản phẩm 3", 200000, "Quần tây", 250000, 3, 5, 0, 0, 0 },
+                    { 4, 0, 0, 3, null, "mô tả sản phẩm 4", 50000, "Áo thun", 75000, 4, 5, 0, 0, 0 },
+                    { 5, 0, 0, 4, null, "mô tả sản phẩm 5", 180000, "Quần kaki", 220000, 5, 5, 0, 0, 0 }
                 });
 
             migrationBuilder.CreateIndex(

@@ -2,6 +2,7 @@
 using server.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,8 +23,10 @@ namespace server.ViewModel
 
         
         public ActionStatus status { get; set; }
-        public Size? size { get; set; }
-        public Color? color { get; set; }
+
+        public string code { get; set; }
+
+        public int capacity { get; set; }
         public int amount { get; set; }
         public int viewCount { get; set; }
         //foreign key

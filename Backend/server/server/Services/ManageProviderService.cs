@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Ocsp;
 using server.Data;
 using server.enums;
 using server.Exceptions;
@@ -23,15 +24,24 @@ namespace server.Services
         }
         public async Task<int> Create(ProviderCreateRequest request)
         {
-            var provider = new Provider()
+            var check = await _context.providers.AnyAsync(x => x.code == request.code);
+            if (!check)
             {
-                name = request.name,
-                status = request.status
-                
-            };
-            _context.providers.Add(provider);
-            await _context.SaveChangesAsync();
-            return provider.id;
+                var provider = new Provider()
+                {
+                    name = request.name,
+                    status = request.status,
+                    email = request.email,
+                    address = request.address,
+                    code = request.code,
+                    phoneNumber = request.phoneNumber,
+                };
+                _context.providers.Add(provider);
+                await _context.SaveChangesAsync();
+                return provider.id;
+            }
+            else { return -1; }
+            
         }
 
         public async Task<int> Delete(int providerId)
@@ -54,6 +64,10 @@ namespace server.Services
                 id = rs.id,
                 name = rs.name,
                 status = rs.status,
+                email = rs.email,
+                address = rs.address,
+                code = rs.code,
+                phoneNumber = rs.phoneNumber,
             }).ToListAsync();
         }
 
@@ -84,22 +98,39 @@ namespace server.Services
                 id = rs.id,
                 name = rs.name,
                 status = rs.status,
+                email = rs.email,
+                address = rs.address,
+                code = rs.code,
+                phoneNumber = rs.phoneNumber,
             }).ToList();
         }
 
         public async Task<int> Update(ProviderUpdateRequest request)
         {
-            var provider = new Provider()
+
+            var check = await _context.providers.AnyAsync(x => x.code == request.code);
+            if(!check) {
+                var provider = new Provider()
+                {
+                    id = request.id,
+                    name = request.name,
+
+                    status = request.status,
+                    email = request.email,
+                    address = request.address,
+                    code = request.code,
+                    phoneNumber = request.phoneNumber,
+
+                };
+
+                _context.Entry(provider).State = EntityState.Modified;
+                return await _context.SaveChangesAsync();
+            }
+            else
             {
-                id = request.id,
-                name = request.name,
-                
-                status = request.status,
-
-            };
-
-            _context.Entry(provider).State = EntityState.Modified;
-            return await _context.SaveChangesAsync();
+                return -1;
+            }
+            
         }
     }
 }

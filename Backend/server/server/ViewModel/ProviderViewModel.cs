@@ -15,5 +15,13 @@ namespace server.ViewModel
         public string name { get; set; }
         [DefaultValue(ActionStatus.Display)]
         public ActionStatus status { get; set; }
+
+        public string phoneNumber { get; set; }
+
+        public string address { get; set; }
+
+        public string code { get; set; }
+
+        public string email { get; set; }
     }
 }

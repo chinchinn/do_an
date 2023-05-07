@@ -10,8 +10,8 @@ using server.Data;
 namespace server.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20230428151123_first")]
-    partial class first
+    [Migration("20230506091538_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -166,7 +166,7 @@ namespace server.Migrations
                         new
                         {
                             Id = new Guid("078269d8-1a12-4592-b92e-7ff1a876a5f2"),
-                            ConcurrencyStamp = "9a2c5565-e1c9-4a7f-b920-d85541a55f99",
+                            ConcurrencyStamp = "5a80840c-797b-4e87-8f9a-6a8780b51bb7",
                             CreationDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Administrator role",
                             Name = "Admin",
@@ -175,7 +175,7 @@ namespace server.Migrations
                         new
                         {
                             Id = new Guid("6d9186ba-2cd6-4b6c-b729-4e605de1019f"),
-                            ConcurrencyStamp = "612d89bf-d2c8-44cf-85c0-8a3bd2b4bdf7",
+                            ConcurrencyStamp = "5d58dc2c-6b0c-4d8b-af61-253e86aa88d5",
                             CreationDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "User role",
                             Name = "User",
@@ -275,13 +275,13 @@ namespace server.Migrations
                         {
                             Id = new Guid("4557893f-1f56-4b6f-bb3b-caefd62c8c49"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "74073ed5-07df-4402-a0df-11aadf33eae7",
+                            ConcurrencyStamp = "7a07babc-016c-404c-855c-79446ac61ded",
                             Email = "luuvututrinh58@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "some-admin-email@nonce.fake",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEI4OaOzTALmeh0hRZ98SxSfA2zEKoVmFzTwE0RehsDBc0s82+b6K4FzC7As6Xo+E2A==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGycW+IyT5IN6Vl6p98Wf1tSiGJ0zp1rwJxv84CckA442x2PVHbhKK21tJ23eiWpjA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -530,11 +530,14 @@ namespace server.Migrations
                     b.Property<int>("amount")
                         .HasColumnType("int");
 
+                    b.Property<int>("capacity")
+                        .HasColumnType("int");
+
                     b.Property<int?>("categoryId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("color")
-                        .HasColumnType("int");
+                    b.Property<string>("code")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("description")
                         .HasColumnType("nvarchar(max)");
@@ -557,9 +560,6 @@ namespace server.Migrations
                     b.Property<int>("sale")
                         .HasColumnType("int");
 
-                    b.Property<int?>("size")
-                        .HasColumnType("int");
-
                     b.Property<int>("status")
                         .HasColumnType("int");
 
@@ -579,8 +579,8 @@ namespace server.Migrations
                         {
                             id = 1,
                             amount = 0,
+                            capacity = 0,
                             categoryId = 1,
-                            color = 6,
                             description = "mô tả sản phẩm 1",
                             importPrice = 100000,
                             name = "Áo sơ mi",
@@ -588,7 +588,6 @@ namespace server.Migrations
                             providerId = 1,
                             rating = 5,
                             sale = 0,
-                            size = 2,
                             status = 0,
                             viewCount = 0
                         },
@@ -596,8 +595,8 @@ namespace server.Migrations
                         {
                             id = 2,
                             amount = 0,
+                            capacity = 0,
                             categoryId = 1,
-                            color = 2,
                             description = "mô tả sản phẩm 2",
                             importPrice = 80000,
                             name = "Áo sơ mi tay ngắn",
@@ -605,7 +604,6 @@ namespace server.Migrations
                             providerId = 2,
                             rating = 5,
                             sale = 0,
-                            size = 0,
                             status = 0,
                             viewCount = 0
                         },
@@ -613,8 +611,8 @@ namespace server.Migrations
                         {
                             id = 3,
                             amount = 0,
+                            capacity = 0,
                             categoryId = 2,
-                            color = 6,
                             description = "mô tả sản phẩm 3",
                             importPrice = 200000,
                             name = "Quần tây",
@@ -622,7 +620,6 @@ namespace server.Migrations
                             providerId = 3,
                             rating = 5,
                             sale = 0,
-                            size = 2,
                             status = 0,
                             viewCount = 0
                         },
@@ -630,8 +627,8 @@ namespace server.Migrations
                         {
                             id = 4,
                             amount = 0,
+                            capacity = 0,
                             categoryId = 3,
-                            color = 1,
                             description = "mô tả sản phẩm 4",
                             importPrice = 50000,
                             name = "Áo thun",
@@ -639,7 +636,6 @@ namespace server.Migrations
                             providerId = 4,
                             rating = 5,
                             sale = 0,
-                            size = 2,
                             status = 0,
                             viewCount = 0
                         },
@@ -647,8 +643,8 @@ namespace server.Migrations
                         {
                             id = 5,
                             amount = 0,
+                            capacity = 0,
                             categoryId = 4,
-                            color = 7,
                             description = "mô tả sản phẩm 5",
                             importPrice = 180000,
                             name = "Quần kaki",
@@ -656,7 +652,6 @@ namespace server.Migrations
                             providerId = 5,
                             rating = 5,
                             sale = 0,
-                            size = 2,
                             status = 0,
                             viewCount = 0
                         });
@@ -669,8 +664,20 @@ namespace server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("email")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("phoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("status")

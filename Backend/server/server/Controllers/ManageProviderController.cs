@@ -47,6 +47,10 @@ namespace server.Controllers
             {
                 return BadRequest();
             }
+            if(providerId == -1)
+            {
+                return Ok(new { code = 99 , message = $"Mã nhà cung cấp {request.code} bị lặp" });
+            }
             var provider = await _manageProviderService.getProviderById(providerId);
             return CreatedAtAction(nameof(getProviderById), new { id = providerId }, provider);
         }

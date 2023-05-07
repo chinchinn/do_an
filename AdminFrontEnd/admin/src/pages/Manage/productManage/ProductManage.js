@@ -11,6 +11,7 @@ import { EditOutlined, DeleteOutlined, EyeOutlined, ImportOutlined, SaveOutlined
 import ModalProduct from '../../../components/product/modalProduct/ModalProduct';
 import ModalProductV2 from '../../../components/product/modalProduct/ModalProductV2';
 
+
 const { Search } = Input;
 const { Option } = Select;
 const warn = "Bạn có chắc chắn muốn xóa sản phẩm này?";
@@ -83,9 +84,10 @@ export default class ProductManage extends Component {
       visible: false,
       isLoading: true,
     })
-    debugger;
+
+
     values.sale = values.sale === undefined ? "0" : values.sale;
-    values.description = values.description === null || values.description === undefined ? "" :  values.description;
+    values.description = values.description === null || values.description === undefined ? "" : values.description;
     let data = {
       id: values.id,
       name: values.name,
@@ -95,7 +97,8 @@ export default class ProductManage extends Component {
       images: values.images,
       categoryId: values.categoryId,
       providerId: values.providerId,
-
+      code: values.code,
+      capacity: parseInt(values.capacity),
       description: values.description.split('\n').join(';'),
       amount: values.amount,
       viewCount: values.viewCount,
@@ -109,7 +112,8 @@ export default class ProductManage extends Component {
       productCreate.set("sale", data.sale);
       productCreate.set("categoryId", data.categoryId);
       productCreate.set("providerId", data.providerId);
-
+      productCreate.set("capacity", data.capacity);
+      productCreate.set("code", data.code);
       productCreate.set("amount", data.amount);
       productCreate.set("description", data.description)
       values.images.forEach((element, index) => {
@@ -117,6 +121,7 @@ export default class ProductManage extends Component {
       })
       axiosInstance('ManageProduct', 'POST', productCreate)
         .then(res => {
+          debugger;
           this.setState({
             data: [...this.state.data, res.data],
             isLoading: false,
@@ -132,7 +137,8 @@ export default class ProductManage extends Component {
       productUpdate.set("sale", data.sale);
       productUpdate.set("categoryId", data.categoryId);
       productUpdate.set("providerId", data.providerId);
-
+      productUpdate.set("capacity", data.capacity);
+      productUpdate.set("code", data.code);
       productUpdate.set("description", data.description);
       productUpdate.set("amount", data.amount);
       productUpdate.set("viewCount", data.viewCount);
@@ -143,9 +149,7 @@ export default class ProductManage extends Component {
           productUpdate.append(`files`, element.originFileObj)
         }
         else {
-
           productUpdate.append(`images`, element.uid)
-
         }
       })
 
@@ -155,15 +159,27 @@ export default class ProductManage extends Component {
 
         })
         .then(data => {
-          let tempData = [...this.state.data].filter(ele => ele.id !== values.id);
-          let pageDefault = Math.ceil((tempData.length + 1) / this.state.pageSize);
-          message.success(`${data.message}`, 2)
-          this.setState({
-            isLoading: false,
-            visible: false,
-            pageDefault: pageDefault,
-            data: [...tempData, data.product]
-          })
+          debugger;
+          if (data?.code != 99) {
+            let tempData = [...this.state.data].filter(ele => ele.id !== values.id);
+            let pageDefault = Math.ceil((tempData.length + 1) / this.state.pageSize);
+            message.success(`${data.message}`, 2)
+            this.setState({
+              isLoading: false,
+              visible: false,
+              pageDefault: pageDefault,
+              data: [...tempData, data.product]
+            })
+          }
+
+          else {
+            message.error(`${data.message}`, 2)
+            this.setState({
+              isLoading: false,
+              visible: false,
+            })
+          }
+
         })
         .catch(err => console.log(err)
         )
@@ -243,6 +259,12 @@ export default class ProductManage extends Component {
   render() {
     const { data, visible, item, isLoading, providers, categories } = this.state;
     const columns = [
+      {
+        title: 'Mã sản phẩm',
+        dataIndex: 'code',
+        key: 'code',
+        render: text => <span>{text}</span>,
+      },
       {
         title: 'Tên sản phẩm',
         dataIndex: 'name',
@@ -347,6 +369,8 @@ export default class ProductManage extends Component {
                     position: ["bottomCenter", "bottomCenter"],
                     defaultPageSize: 5
                   }}
+
+
                 >
                 </Table>
               </>

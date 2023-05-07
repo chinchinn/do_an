@@ -28,8 +28,12 @@ namespace server.Models
 
         [DefaultValue(ActionStatus.Display)]
         public ActionStatus status { get; set; }
-        public Size? size { get; set; }
-        public Color? color { get; set; }
+
+        public string code { get; set; }
+
+        [DefaultValue(1)]
+        public int capacity { get; set; }
+
         [DefaultValue(1)]
         public int amount { get; set; }
         [DefaultValue(0)]

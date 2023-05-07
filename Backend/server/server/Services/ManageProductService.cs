@@ -30,121 +30,145 @@ namespace server.Services
         }
         public async Task<int> Create(ProductCreateRequest request)
         {
-            var tempImages = new List<Image>();
-            foreach(IFormFile f in request.images)
+
+
+            var check =await _context.products.AnyAsync(x=>x.code == request.code);
+            if (!check)
             {
-                var url = await this.SaveFile(f);
-                var img = new Image() { urlImage = url };
-                tempImages.Add(img);
-            }
-            var product = new Product()
-            {
-                name = request.name,
-                description = request.description,
-                //color = request.color,
-                //size = request.size,
-                sale = request.sale,
-                status = enums.ActionStatus.Display,
-                rating = 5,
-                amount = request.amount,
-                importPrice = request.importPrice,
-                price = request.price,
-                Images = tempImages,
-                categoryId = request.categoryId,
-                providerId = request.providerId
-            };
-            
-            _context.products.Add(product);
-            await _context.SaveChangesAsync();
-            return product.id;
-        }
-        public async Task<int> Update(ProductUpdateRequest request)
-        {
-            
-            
-            //
-            if(request.images != null)
-            {
-                var findProduct = await _context.products.Include(img => img.Images).Select(se => new
+                var tempImages = new List<Image>();
+                foreach (IFormFile f in request.images)
                 {
-                    id = se.id,
-                    Images = se.Images.Where(e => e.status == ActionStatus.Display).ToList()
+                    var url = await this.SaveFile(f);
+                    var img = new Image() { urlImage = url };
+                    tempImages.Add(img);
                 }
-                ).FirstOrDefaultAsync(p => p.id == request.id);
-                foreach (var image in findProduct.Images)
+                var product = new Product()
                 {
-                    if (request.images.Contains(image.id) == false)
-                    {
-                        image.status = ActionStatus.Deleted;
-                        _context.Entry(image).State = EntityState.Modified;
-                        
-                    }
-                }
-                if(request.files != null)
-                {
-                    var tempImages = new List<Image>();
-                    foreach (IFormFile f in request.files)
-                    {
-                        var url = await this.SaveFile(f);
-                        var img = new Image() { urlImage = url, productId = request.id };
-                        tempImages.Add(img);
-                    }
-                    _context.images.AddRange(tempImages);
-                }
+                    name = request.name,
+                    description = request.description,
+                    //color = request.color,
+                    //size = request.size,
+                    code = request.code,
+                    capacity = request.capacity ?? 1,
+                    sale = request.sale,
+                    status = enums.ActionStatus.Display,
+                    rating = 5,
+                    amount = request.amount,
+                    importPrice = request.importPrice,
+                    price = request.price,
+                    Images = tempImages,
+                    categoryId = request.categoryId,
+                    providerId = request.providerId
+                };
+
+                _context.products.Add(product);
+                await _context.SaveChangesAsync();
+                return product.id;
             }
             else
             {
-                var findProduct = await _context.products.Include(img => img.Images).Select(se => new
-                {
-                    id = se.id,
-                    Images = se.Images.Where(e => e.status == ActionStatus.Display).ToList()
-                }
-                ).FirstOrDefaultAsync(p => p.id == request.id);
-                foreach (var image in findProduct.Images)
-                {
-                    
-                     image.status = ActionStatus.Deleted;
-                     _context.Entry(image).State = EntityState.Modified;
-                     
-                    
-                }
-                if (request.files != null)
-                {
-                    var tempImages = new List<Image>();
-                    foreach (IFormFile f in request.files)
-                    {
-                        var url = await this.SaveFile(f);
-                        var img = new Image() { urlImage = url, productId = request.id };
-                        tempImages.Add(img);
-                    }
-                    _context.images.AddRange(tempImages);
-                }
+                return -1;
             }
-            
-            
+           
+        }
+        public async Task<int> Update(ProductUpdateRequest request)
+        {
 
-            //
-            var product = new Product()
+            var check = await _context.products.AnyAsync(x => x.code == request.code);
+            if (!check)
             {
-                id = request.id,
-                name = request.name,
-                //color = request.color,
-                //size = request.size,
-                description = request.description,
-                price = request.price,
-                importPrice = request.importPrice,
-                rating = request.rating,
-                sale = request.sale,
-                amount= request.amount,
-                viewCount = request.viewCount,
-                Images = null,
-                status = request.status,
-                categoryId = request.categoryId,
-                providerId = request.providerId
-            };
-            _context.Entry(product).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return product.id;
+                if (request.images != null)
+                {
+                    var findProduct = await _context.products.Include(img => img.Images).Select(se => new
+                    {
+                        id = se.id,
+                        Images = se.Images.Where(e => e.status == ActionStatus.Display).ToList()
+                    }
+                    ).FirstOrDefaultAsync(p => p.id == request.id);
+                    foreach (var image in findProduct.Images)
+                    {
+                        if (request.images.Contains(image.id) == false)
+                        {
+                            image.status = ActionStatus.Deleted;
+                            _context.Entry(image).State = EntityState.Modified;
+
+                        }
+                    }
+                    if (request.files != null)
+                    {
+                        var tempImages = new List<Image>();
+                        foreach (IFormFile f in request.files)
+                        {
+                            var url = await this.SaveFile(f);
+                            var img = new Image() { urlImage = url, productId = request.id };
+                            tempImages.Add(img);
+                        }
+                        _context.images.AddRange(tempImages);
+                    }
+                }
+                else
+                {
+                    var findProduct = await _context.products.Include(img => img.Images).Select(se => new
+                    {
+                        id = se.id,
+                        Images = se.Images.Where(e => e.status == ActionStatus.Display).ToList()
+                    }
+                    ).FirstOrDefaultAsync(p => p.id == request.id);
+                    foreach (var image in findProduct.Images)
+                    {
+
+                        image.status = ActionStatus.Deleted;
+                        _context.Entry(image).State = EntityState.Modified;
+
+
+                    }
+                    if (request.files != null)
+                    {
+                        var tempImages = new List<Image>();
+                        foreach (IFormFile f in request.files)
+                        {
+                            var url = await this.SaveFile(f);
+                            var img = new Image() { urlImage = url, productId = request.id };
+                            tempImages.Add(img);
+                        }
+                        _context.images.AddRange(tempImages);
+                    }
+                }
+
+
+
+                //
+                var product = new Product()
+                {
+                    id = request.id,
+                    name = request.name,
+                    //color = request.color,
+                    //size = request.size,
+                    code = request.code,
+                    capacity = request.capacity ?? 1,
+                    description = request.description,
+                    price = request.price,
+                    importPrice = request.importPrice,
+                    rating = request.rating,
+                    sale = request.sale,
+                    amount = request.amount,
+                    viewCount = request.viewCount,
+                    Images = null,
+                    status = request.status,
+                    categoryId = request.categoryId,
+                    providerId = request.providerId
+                };
+                _context.Entry(product).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return product.id;
+            }
+
+            else
+            {
+                return -1;
+            }
+            //
+            
 
         }
         public async Task<int> Delete(int productId)
@@ -172,8 +196,8 @@ namespace server.Services
                     sale = rs.sale,
                     categoryId = rs.categoryId,
                     category = rs.category,
-                    color = rs.color,
-                    size = rs.size,
+                    code = rs.code,
+                    capacity = rs.capacity,
                     amount = rs.amount,
                     viewCount = rs.viewCount,
                     description = rs.description,
@@ -217,8 +241,8 @@ namespace server.Services
                     sale = rs.sale,
                     categoryId = rs.categoryId,
                     category = rs.category,
-                    color = rs.color,
-                    size = rs.size,
+                    code = rs.code,
+                    capacity = rs.capacity,
                     description = rs.description,
                     Evaluations = rs.Evaluations,
                     Images = rs.Images,
@@ -246,7 +270,7 @@ namespace server.Services
                     name = ele.name,
                     category = ele.category,
                     categoryId = ele.categoryId,
-                    color = ele.color,
+                  
                     description = ele.description,
                     Evaluations = ele.Evaluations.Where(e => e.status == EvaluationStatus.Confirm).ToList(),
                     Images = ele.Images.Where(i => i.status == ActionStatus.Display).ToList(),
@@ -256,7 +280,7 @@ namespace server.Services
                     providerId = ele.providerId,
                     rating = ele.rating,
                     sale = ele.sale,
-                    size = ele.size,
+                    
                     status = ele.status,
                     amount = ele.amount,
                     viewCount = ele.viewCount,
@@ -303,8 +327,7 @@ namespace server.Services
                 sale = rs.sale,
                 categoryId = rs.categoryId,
                 category = rs.category,
-                color = rs.color,
-                size = rs.size,
+             
                 description = rs.description,
                 
                 Images = rs.Images.Where(p => p.status == ActionStatus.Display).ToList(),

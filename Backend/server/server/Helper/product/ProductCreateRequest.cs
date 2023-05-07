@@ -32,6 +32,10 @@ namespace server.Helper
         public int? categoryId { get; set; }
         //
         public int? providerId { get; set; }
-        
+
+        public int? capacity { get; set; }
+
+        public string code { get; set; }
+
     }
 }

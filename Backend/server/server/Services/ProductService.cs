@@ -49,8 +49,7 @@ namespace server.Services
                     sale = rs.sale,
                     categoryId = rs.categoryId,
                     category = rs.category,
-                    color = rs.color,
-                    size = rs.size,
+                  
                     description = rs.description,
                     Evaluations = rs.Evaluations,
                     Images = rs.Images,
@@ -81,8 +80,7 @@ namespace server.Services
                     sale = rs.sale,
                     categoryId = rs.categoryId,
                     category = rs.category,
-                    color = rs.color,
-                    size = rs.size,
+                 
                     amount = rs.amount,
                     viewCount = rs.viewCount,
                     description = rs.description,
@@ -122,7 +120,7 @@ namespace server.Services
                     name = ele.name,
                     category = ele.category,
                     categoryId = ele.categoryId,
-                    color = ele.color,
+                 
                     description = ele.description,
                     Evaluations = ele.Evaluations.Where(e => e.status == EvaluationStatus.Confirm).ToList(),
                     Images = ele.Images.Where(i => i.status == ActionStatus.Display).ToList(),
@@ -133,7 +131,7 @@ namespace server.Services
                     //
                     rating = Convert.ToInt32(ele.Evaluations.Where(e => e.status == EvaluationStatus.Confirm).Average(ave => ave.rating)),
                     sale = ele.sale,
-                    size = ele.size,
+                 
                     status = ele.status,
                     amount = ele.amount,
                     viewCount = ele.viewCount,
@@ -151,7 +149,7 @@ namespace server.Services
                     name = ele.name,
                     category = ele.category,
                     categoryId = ele.categoryId,
-                    color = ele.color,
+                   
                     description = ele.description,
                     Evaluations = ele.Evaluations.Where(e => e.status == EvaluationStatus.Confirm).ToList(),
                     Images = ele.Images.Where(i => i.status == ActionStatus.Display).ToList(),
@@ -161,7 +159,6 @@ namespace server.Services
                     providerId = ele.providerId,
                     rating = ele.rating,
                     sale = ele.sale,
-                    size = ele.size,
                     status = ele.status,
                     amount = ele.amount,
                     viewCount = ele.viewCount,
@@ -187,8 +184,7 @@ namespace server.Services
                     sale = rs.sale,
                     categoryId = rs.categoryId,
                     category = rs.category,
-                    color = rs.color,
-                    size = rs.size,
+                
                     amount = rs.amount,
                     viewCount = rs.viewCount,
                     description = rs.description,
@@ -215,8 +211,7 @@ namespace server.Services
                     sale = rs.sale,
                     categoryId = rs.categoryId,
                     category = rs.category,
-                    color = rs.color,
-                    size = rs.size,
+              
                     amount = rs.amount,
                     viewCount = rs.viewCount,
                     description = rs.description,
@@ -243,8 +238,7 @@ namespace server.Services
                     sale = rs.sale,
                     categoryId = rs.categoryId,
                     category = rs.category,
-                    color = rs.color,
-                    size = rs.size,
+                
                     amount = rs.amount,
                     viewCount = rs.viewCount,
                     description = rs.description,
@@ -294,8 +288,7 @@ namespace server.Services
                 sale = rs.sale,
                 categoryId = rs.categoryId,
                 category = rs.category,
-                color = rs.color,
-                size = rs.size,
+            
                 description = rs.description,
 
                 Images = rs.Images.Where(p => p.status == ActionStatus.Display).ToList(),

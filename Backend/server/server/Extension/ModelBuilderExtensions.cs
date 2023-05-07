@@ -52,7 +52,7 @@ namespace server.Extension
             //Product
             modelBuilder.Entity<Product>().HasData( new Product { id = 1, name="Áo sơ mi", importPrice=100000, price = 150000,
                 
-                rating = 5, description="mô tả sản phẩm 1" , status= enums.ActionStatus.Display, color = Color.blue, size = Size.L,categoryId = 1,
+                rating = 5, description="mô tả sản phẩm 1" , status= enums.ActionStatus.Display, categoryId = 1,
              providerId = 1},
              new Product
              {
@@ -64,8 +64,7 @@ namespace server.Extension
                 
                  description = "mô tả sản phẩm 2",
                  status = enums.ActionStatus.Display,
-                 color = Color.red,
-                 size = Size.X,
+                
                  categoryId = 1,
                  providerId = 2
              },
@@ -79,8 +78,7 @@ namespace server.Extension
                  
                  description = "mô tả sản phẩm 3",
                  status = enums.ActionStatus.Display,
-                 color = Color.blue,
-                 size = Size.L,
+
                  categoryId = 2,
                  providerId = 3
              },
@@ -94,8 +92,7 @@ namespace server.Extension
 
                  description = "mô tả sản phẩm 4",
                  status = enums.ActionStatus.Display,
-                 color = Color.black,
-                 size = Size.L,
+               
                  categoryId = 3,
                  providerId = 4
              },
@@ -109,8 +106,7 @@ namespace server.Extension
 
                  description = "mô tả sản phẩm 5",
                  status = enums.ActionStatus.Display,
-                 color = Color.gray,
-                 size = Size.L,
+                 
                  categoryId = 4,
                  providerId = 5
              }

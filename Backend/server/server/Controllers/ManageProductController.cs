@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using server.Data;
 using server.Helper;
 using server.Helper.product;
 using server.Interfaces;
@@ -21,8 +23,10 @@ namespace server.Controllers
     public class ManageProductController : ControllerBase
     {
         public readonly IManageProductService _manageProductService;
-        public ManageProductController(IManageProductService manageProductService)
+        private readonly ShopDbContext _context;
+        public ManageProductController(IManageProductService manageProductService, ShopDbContext context)
         {
+            _context = context;
             _manageProductService = manageProductService;
         }
         
@@ -34,6 +38,15 @@ namespace server.Controllers
             var data = await _manageProductService.GetAll();
             return data;
         }
+
+        [HttpGet("check-duplicate")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CheckDuplicate(string code)
+        {
+            var check = await _context.products.AnyAsync(x=>x.code.ToLower() == code.ToLower());
+            return Ok(check);
+        }
+
         [HttpGet("getProductById")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> getProductById(int productId)
@@ -48,6 +61,12 @@ namespace server.Controllers
         {
            
             var productId = await _manageProductService.Create(request);
+
+
+            if(productId == -1)
+            {
+                return Ok(new { StatusCodes.Status500InternalServerError, message = "duplicate" }); ;
+            }
             if(productId == 0)
             {
                 return BadRequest();
@@ -61,7 +80,13 @@ namespace server.Controllers
         {
             
             var productId = await _manageProductService.Update(request);
-            if(productId == 0)
+
+            if (productId == -1)
+            {
+                return Ok(new { code = 99, message = $"Mã sản phẩm {request.code} bị lặp" }); ;
+            }
+
+            if (productId == 0)
             {
                 return BadRequest();
                 
@@ -115,8 +140,8 @@ namespace server.Controllers
                 url = urlImage
             });
         }
-        [HttpPost("image")]
 
+        [HttpPost("image")]
         public IActionResult upload()
         {
             return Ok(new
@@ -125,6 +150,17 @@ namespace server.Controllers
                 status = "done",
                 url = "hihi"
             });
+        }
+
+        [HttpPost("GetAllPaging")]
+        public async Task<IActionResult> GetAllPaging([FromBody] GetProductPagingRequest request)
+        {
+            var data = await _manageProductService.GetAllPaging(request);
+            if (data == null)
+            {
+                return BadRequest();
+            }
+            return Ok(data);
         }
 
     }

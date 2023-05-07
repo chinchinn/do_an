@@ -11,5 +11,12 @@ namespace server.Helper.provider
         public string name { get; set; }
         
         public ActionStatus status { get; set; }
+        public string phoneNumber { get; set; }
+
+        public string address { get; set; }
+
+        public string code { get; set; }
+
+        public string email { get; set; }
     }
 }

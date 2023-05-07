@@ -26,9 +26,6 @@ export default class ProviderManage extends Component {
     componentDidMount() {
         axiosInstance("ManageProvider", "GET")
             .then(res => {
-
-
-
                 this.setState({
                     data: [...res.data],
                     isLoading: false
@@ -40,8 +37,8 @@ export default class ProviderManage extends Component {
     }
     //xử khi gọi add, update , enable modal
     handleClickBtn(record = null) {
-        
-        
+
+
         this.setState({
             visible: true,
             item: { ...record }
@@ -63,110 +60,159 @@ export default class ProviderManage extends Component {
     // xử lý add, update
     handleSubmit(value) {
         if (value.id) {
-            const {data } = this.state;
+            const { data } = this.state;
             let tempdata = [...data].filter(ele => ele.id !== value.id);
             this.setState({ isLoading: true });
-            axiosInstance('ManageProvider','PUT',value)
-            .then(res => {
-                message.success(`${res.data.message}`, 2)
-                this.setState({ 
-                    data: [...tempdata, value],
-                    isLoading: false,
-                    visible: false,
-                });
-            }
-            ).catch(err => {
-                message.warning("Thêm nhà cung cấp thất bại!", 2)
-                this.setState({ isLoading: false, visible: false, });
-            })
-            
+            axiosInstance('ManageProvider', 'PUT', value)
+                .then(res => {
+                    debugger;
+                    if (res?.code === 99) {
+                        message.error(res.message, 2)
+                        this.setState(prevState => {
+                            return {
+                                ...prevState,
+                                isLoading: false,
+                                visible: false
+                            }
+                        });
+                    }
+                    else {
+                        message.success(`${res.data.message}`, 2)
+                        this.setState({
+                            data: [...tempdata, value],
+                            isLoading: false,
+                            visible: false,
+                        });
+                    }
+
+                }
+                ).catch(err => {
+                    message.warning("Cập nhật nhà cung cấp thất bại!", 2)
+                    this.setState({ isLoading: false, visible: false, });
+                })
+
         }
-        else{
+        else {
             this.setState({ isLoading: true });
             axiosInstance('ManageProvider', 'POST', value)
                 .then(res => {
+                    debugger;
+                    if (res.code = 99) {
+                        message.error(res.message, 2)
+                        this.setState(prevState => {
+                            return {
+                                ...prevState,
+                                isLoading: false,
+                                visible: false
+                            }
+                        });
+                    }
+                    else {
+                        message.success("Thêm nhà cung cấp thành công!", 2)
+                        this.setState(prevState => {
+                            return {
+                                ...prevState,
+                                data: [...prevState.data, res.data],
+                                isLoading: false,
+                                visible: false
+                            }
+                        });
+                    }
                     //console.log(res.data);
-                    message.success("Thêm nhà cung cấp thành công!", 2)
-                    this.setState(prevState => {
-                        return {
-                            ...prevState,
-                            data: [...prevState.data, res.data],
-                            isLoading: false,
-                            visible: false
-                        }
-                    });
                 })
         }
 
     }
     //api xóa
-    confirmDelete(record){
-        const {data } = this.state;
+    confirmDelete(record) {
+        const { data } = this.state;
         let tempdata = [...data].filter(ele => ele.id !== record.id);
         this.setState({ isLoading: true });
-        
+
         axiosInstance(`ManageProvider/${record.id}`, 'DELETE')
-        .then(res => {
-            message.success(`${res.data.message}`, 2)
-            this.setState({
-                data: [...tempdata],
-                isLoading: false,
+            .then(res => {
+                message.success(`${res.data.message}`, 2)
+                this.setState({
+                    data: [...tempdata],
+                    isLoading: false,
+                })
             })
-        })
-        .catch(err => {
-            message.warning("Xóa nhà cung cấp thất bại!", 2)
-            this.setState({ isLoading: false});
-        })
+            .catch(err => {
+                message.warning("Xóa nhà cung cấp thất bại!", 2)
+                this.setState({ isLoading: false });
+            })
     }
     //api tìm kiếm
-    handleSearch(value){
+    handleSearch(value) {
         this.setState({
             isLoading: true,
         })
-        if(value.trim() === ''){
+        if (value.trim() === '') {
             axiosInstance("ManageProvider", "GET")
-            .then(res => {
-                this.setState({
-                    data: [...res.data],
-                    isLoading: false
-                })
-            }
-            )
-            .catch(err => console.log(err)
-            )
+                .then(res => {
+                    this.setState({
+                        data: [...res.data],
+                        isLoading: false
+                    })
+                }
+                )
+                .catch(err => console.log(err)
+                )
         }
-        else{
+        else {
             axiosInstance(`ManageProvider/search/${value}`, 'GET')
-            .then(res => {
-                console.log(res.data);
-                
-                this.setState({
-                    data: [...res.data],
-                    isLoading: false
-                })
-            }
-            )
-            .catch(err => console.log(err)
-            )
+                .then(res => {
+                    console.log(res.data);
+
+                    this.setState({
+                        data: [...res.data],
+                        isLoading: false
+                    })
+                }
+                )
+                .catch(err => console.log(err)
+                )
         }
-        
+
     }
     render() {
         const { data, item, visible, isLoading } = this.state;
         // colums
         const columns = [
             {
+                title: 'Mã nhà cung ứng',
+                dataIndex: 'code',
+                key: 'code',
+                render: text => <span>{text}</span>,
+            },
+            {
                 title: 'Tên nhà cung ứng',
                 dataIndex: 'name',
-                width: '40%',
                 key: 'name',
+                render: text => <span>{text}</span>,
+            },
+            {
+                title: 'Email',
+                dataIndex: 'email',
+                key: 'email',
+                render: text => <span>{text}</span>,
+            },
+            {
+                title: 'Số điện thoại',
+                dataIndex: 'phoneNumber',
+                key: 'phoneNumber',
+                render: text => <span>{text}</span>,
+            },
+            {
+                title: 'Địa chỉ',
+                dataIndex: 'address',
+                key: 'address',
                 render: text => <span>{text}</span>,
             },
 
             {
                 title: 'Trạng thái',
                 dataIndex: 'status',
-                width: '30%',
                 key: 'status',
                 render: status => (<span>{
                     <Tag color="green">Hiển thị</Tag>
@@ -229,37 +275,37 @@ export default class ProviderManage extends Component {
 
                                 </Table>
 
-                        
 
-                         </Spin> : <>
-                                    <div style={{ margin: 10 }}>
-                                        <Row>
-                                            <Col span={12} offset={6}>
-                                                <Search
-                                                    placeholder="tìm kiếm..."
-                                                    enterButton="Tìm kiếm"
 
-                                                    size="large"
-                                                    onSearch={value => this.handleSearch(value)}
-                                                />
-                                            </Col>
-                                        </Row>
-                                    </div>
+                            </Spin> : <>
+                                <div style={{ margin: 10 }}>
+                                    <Row>
+                                        <Col span={12} offset={6}>
+                                            <Search
+                                                placeholder="tìm kiếm..."
+                                                enterButton="Tìm kiếm"
 
-                                    <Table style={{ margin: 10 }} width="100%" columns={columns} dataSource={datas} pagination={{
-                                        position: ["bottomCenter", "bottomCenter"],
-                                        defaultPageSize: 5,
-                                    }}>
+                                                size="large"
+                                                onSearch={value => this.handleSearch(value)}
+                                            />
+                                        </Col>
+                                    </Row>
+                                </div>
 
-                                    </Table>
+                                <Table style={{ margin: 10 }} width="100%" columns={columns} dataSource={datas} pagination={{
+                                    position: ["bottomCenter", "bottomCenter"],
+                                    defaultPageSize: 5,
+                                }}>
 
-                                    
-                                    {
-                                        visible ? <ModalProvider visible={visible} data={item} onSubmitForm={(value) => this.handleSubmit(value)}
-                                            onCancel={() => this.handleCancel()} onChangeInput={(e) => 
-                                                this.handleChangeInput(e)}></ModalProvider> : ''
-                                    }
-                                </>
+                                </Table>
+
+
+                                {
+                                    visible ? <ModalProvider visible={visible} data={item} onSubmitForm={(value) => this.handleSubmit(value)}
+                                        onCancel={() => this.handleCancel()} onChangeInput={(e) =>
+                                            this.handleChangeInput(e)}></ModalProvider> : ''
+                                }
+                            </>
                         }
                     </div>
                 </div>

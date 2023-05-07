@@ -6,6 +6,7 @@ import { colors } from '../../../utils/colors';
 import { sizes } from '../../../utils/sizes';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import queryString from 'querystring';
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -30,6 +31,8 @@ function ModalProductV2(props) {
         sizes: [],
     });
 
+    const [validate, setValidate] = useState(false);
+
     const { categories, providers, colors, sizes } = modalProduct;
     const { data, visible } = props;
 
@@ -39,8 +42,8 @@ function ModalProductV2(props) {
         Promise.all([
             axiosInstance('ManageCategory', 'GET'),
             axiosInstance('ManageProvider', 'GET'),
-           
-          ]).then(res=>{
+
+        ]).then(res => {
             debugger;
             setModalProduct({
                 ...modalProduct,
@@ -50,7 +53,7 @@ function ModalProductV2(props) {
                     return { uid: ele.id, url: ele.urlImage, status: ele.status, productId: ele.productId }
                 }) : [],
             })
-          })
+        })
         // axiosInstance('ManageCategory', 'GET')
         //     .then(res => {
         //         setModalProduct({
@@ -67,7 +70,7 @@ function ModalProductV2(props) {
         //             providers: [...res.data]
         //         })
         //     })
-    },[props.data])
+    }, [props.data])
 
     useEffect(() => {
         return () => {
@@ -90,7 +93,7 @@ function ModalProductV2(props) {
     function handleChange({ fileList }) {
 
 
-        setModalProduct({...modalProduct, imageList: fileList })
+        setModalProduct({ ...modalProduct, imageList: fileList })
 
     }
     const handleUpload = file => {
@@ -100,8 +103,11 @@ function ModalProductV2(props) {
             upload
         )
     }
+
+
+
     function handleSubmitForm(values) {
-        
+
         const { imageList } = modalProduct;
         const { data } = props;
         console.log(values);
@@ -109,25 +115,36 @@ function ModalProductV2(props) {
         var item = values;
 
         form
-          .validateFields()
-          .then(i => {
-            debugger;
-            form.resetFields();
-            var detail = { id: data.id, ...item, images: [...imageList] }
-            props.onSubmitForm(detail);
-          })
-          .catch(info => {
-            console.log('Validate Failed:', info);
-          });
-        
+            .validateFields()
+            .then(i => {
+
+                form.resetFields();
+                var detail = { id: data.id, ...item, images: [...imageList] }
+                props.onSubmitForm(detail);
+            })
+            .catch(info => {
+                console.log('Validate Failed:', info);
+            });
+
 
 
     }
 
-    const saveFormRef = (data) => {
+    const validateCode = async (rule, value) => {
+        debugger;
+        let check = await axiosInstance(`ManageProduct/check-duplicate?${queryString.stringify({
+            code: value,
+        })}`, 'GET')
+            .then(res => res.data);
 
-        form = data;
-    }
+        if (check) {
+            throw new Error('Mã code bị lặp');
+        }
+
+
+    };
+
+
 
     const handleRemoveImage = file => {
         console.log(file);
@@ -159,16 +176,17 @@ function ModalProductV2(props) {
                         importPrice: data.importPrice,
                         price: data.price,
                         sale: data.sale,
-                       
+                        code: data.code,
+                        capacity: data.capacity,
                         categoryId: data.categoryId,
                         providerId: data.providerId,
                         description: !!data.description ? data.description.split(';').join('\n') : null,
                         amount: data.amount,
                         viewCount: data.viewCount,
                     }
-                  
+
                 }
-                form={form}>
+                    form={form}>
                     <Row>
                         <Col span={18} offset={3}>
                             <Form.Item>
@@ -184,6 +202,21 @@ function ModalProductV2(props) {
                     </Row>
                     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} >
                         <Col className="gutter-row" span={12}>
+                            <Form.Item name="code" rules={[
+                                {
+                                    required: true,
+                                    message: "Xin vui lòng nhập mã sản phẩm!",
+                                },
+                                { validator: validateCode, validateTrigger: ['onChange'] },
+                            ]}
+                                validateTrigger={['onChange']}
+
+                                // help={validate ? "Mã code bị trùng" : ""}
+                                // validateStatus={!validate ? "success" : "error"}
+
+                                label="Mã sản phẩm" {...config}>
+                                <Input type="text" maxLength={10} placeholder="Mã sản phẩm"></Input>
+                            </Form.Item>
                             <Form.Item name="name" rules={[
                                 {
                                     required: true,
@@ -194,6 +227,11 @@ function ModalProductV2(props) {
                             </Form.Item>
                             <Form.Item name="importPrice" rules={[
                                 {
+
+                                    message: "Xin vui lòng nhập number",
+                                    pattern: new RegExp(/^[0-9]+$/)
+                                },
+                                {
                                     required: true,
                                     message: "Xin vui lòng nhập giá nhập!",
                                 }
@@ -202,9 +240,15 @@ function ModalProductV2(props) {
                             </Form.Item>
                             <Form.Item rules={[
                                 {
+
+                                    message: "Xin vui lòng nhập number",
+                                    pattern: new RegExp(/^[0-9]+$/)
+                                },
+                                {
                                     required: true,
                                     message: "Xin vui lòng nhập giá bán!",
                                 }
+
                             ]} name="price" label="Giá bán (VNĐ)" {...config}>
                                 <Input type="text" placeholder="Giá bán"></Input>
                             </Form.Item>
@@ -217,6 +261,11 @@ function ModalProductV2(props) {
                         </Col>
                         <Col className="gutter-row" span={12}>
                             <Form.Item name="amount" rules={[
+                                {
+
+                                    message: "Xin vui lòng nhập number",
+                                    pattern: new RegExp(/^[0-9]+$/)
+                                },
                                 {
                                     required: true,
                                     message: "Xin vui lòng nhập số lượng!",
@@ -258,6 +307,21 @@ function ModalProductV2(props) {
                                         })
                                     }
                                 </Select>
+                            </Form.Item>
+
+                            <Form.Item name="capacity" label="Dung tích" {...config}
+                                rules={[{
+
+                                    message: "Xin vui lòng nhập number",
+                                    pattern: new RegExp(/^[0-9]+$/)
+                                },
+                                {
+                                    required: true,
+                                    message: "Xin vui lòng dung tích",
+
+                                }]
+                                } >
+                                <Input type="text" placeholder="dung tích"></Input>
                             </Form.Item>
 
                         </Col>
