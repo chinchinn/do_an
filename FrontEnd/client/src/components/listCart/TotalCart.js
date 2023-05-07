@@ -7,6 +7,7 @@ import axios from 'axios';
 import { handle_checkout_cart } from '../../action/cartsAction';
 import ModelCheckoutV2 from './modalCheckout/ModelCheckoutV2';
 import { Modal } from 'antd';
+import ModalViewOrderDetail from '../UserPage/InfoUser/ModalViewOrderDetail';
 
 
 class TotalCart extends Component {
@@ -15,14 +16,14 @@ class TotalCart extends Component {
         this.state = {
             visibleModal: false,
             dataForm: {},
-            visibleModalConfirm: false
+            visibleModalConfirm: false,
+            feeShip: 0,
+            customerItem: '',
+            note: null,
+            orderDetailList: [],
         }
     }
-    componentDidMount() {
-        axios({ url: 'https://dc.tintoc.net/app/api-customer/public/provinces/?size=64', method: 'GET' })
-            .then(res => console.log(res.data)
-            )
-    }
+
     handleCheckout() {
         debugger;
         this.setState({
@@ -35,20 +36,40 @@ class TotalCart extends Component {
         })
     }
     handleCreateOrder = (order) => {
-        debugger;
+
         this.props.create_order(order);
     }
     handleShowConfirm = (dataForm) => {
         debugger;
+        const carts = JSON.parse(localStorage.getItem('carts'));
+
+        const orderDetails = carts.map((ele) => {
+            return {
+                id: ele.id,
+                orderId: ele.id,
+                order: ele.id,
+                quantity: ele.quantity,
+                productId: ele.category?.id,
+                product: ele.category?.name,
+                picture: ele?.images?.[0]?.urlImage,
+                sale: ele.sale,
+                unitPrice: ele.importPrice,
+                amount: ele.price,
+                key: ele.id,
+            }
+        });
         this.setState({
             dataForm: dataForm,
             visibleModalConfirm: true,
+            orderDetailList: orderDetails,
+            feeShip: dataForm?.feeShip,
+            customerItem: dataForm?.displayname,
+            note: dataForm?.note,
 
         })
-
     }
 
-    handleSubmitCheckout = (values) => {
+    handleSubmitCheckout = () => {
         debugger;
         //this.props.onCreateOrder();
         const carts = JSON.parse(localStorage.getItem('carts'));
@@ -87,7 +108,12 @@ class TotalCart extends Component {
 
     }
     render() {
-
+        const {
+            feeShip,
+            customerItem,
+            orderId,
+            orderDetailList,
+            note } = this.state;
         return (
             <>
                 <div className="container-total-cart">
@@ -126,7 +152,7 @@ class TotalCart extends Component {
                         </ModelCheckoutV2> : ""
                     }
 
-                    {
+                    {/* {
                         this.state.visibleModalConfirm ? <Modal open={true}
                             onOk={this.handleSubmitCheckout.bind(this)}
                             confirmLoading={this.props.isLoading}
@@ -151,7 +177,35 @@ class TotalCart extends Component {
                                 </div>
                             </div>
                         </Modal> : ""
+                    } */}
+
+
+
+                    {
+                        this.state.visibleModalConfirm ?
+                            <ModalViewOrderDetail
+                                visible={this.state.visibleModalConfirm}
+                                onCancel={() => {
+                                    this.setState({
+                                        visibleModalConfirm: false
+                                    })
+                                }
+
+                                }
+                                handleSubmit={(value) => {
+                                    debugger;
+                                    this.handleSubmitCheckout();
+                                }}
+                                data={orderDetailList}
+                                feeShip={feeShip}
+                                customer={customerItem}
+                                note={note}
+                                isSubmit = {true}
+
+                            >
+                            </ModalViewOrderDetail> : null
                     }
+
                 </div>
             </>
         )

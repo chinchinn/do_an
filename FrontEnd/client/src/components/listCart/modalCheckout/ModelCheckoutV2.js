@@ -84,15 +84,17 @@ function ModelCheckoutV2(props) {
     >
         <Spin spinning={props.isLoading} size="large">
             <Form onFinish={() => {
-                var dataForm = form.getFieldsValue();
-                var flag = dataForm;
-                delete flag.note;
-                var check = Object.values(flag).every(x => x === undefined);
+                form
+                    .validateFields()
+                    .then(i => {
 
-                if (!check) {
-                    props.handleShowConfirm(dataForm);
-                }
 
+
+                        props.handleShowConfirm(i);
+                    })
+                    .catch(info => {
+                        console.log('Validate Failed:', info);
+                    });
             }}
                 form={form}
                 initialValues={{
