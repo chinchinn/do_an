@@ -22,6 +22,7 @@ export default class ProviderManage extends Component {
             isLoading: true
         }
     }
+
     //lifecycle mounted
     componentDidMount() {
         axiosInstance("ManageProvider", "GET")
@@ -35,15 +36,16 @@ export default class ProviderManage extends Component {
             .catch(err => console.log(err)
             )
     }
+
     //xử khi gọi add, update , enable modal
     handleClickBtn(record = null) {
-
-
+      
         this.setState({
             visible: true,
             item: { ...record }
         })
     }
+
     //xử lý tắt modal
     handleCancel(value) {
         this.setState({
@@ -90,14 +92,12 @@ export default class ProviderManage extends Component {
                     message.warning("Cập nhật nhà cung cấp thất bại!", 2)
                     this.setState({ isLoading: false, visible: false, });
                 })
-
         }
         else {
             this.setState({ isLoading: true });
             axiosInstance('ManageProvider', 'POST', value)
                 .then(res => {
-                    debugger;
-                    if (res.code = 99) {
+                    if (res.code == 99) {
                         message.error(res.message, 2)
                         this.setState(prevState => {
                             return {
@@ -123,6 +123,7 @@ export default class ProviderManage extends Component {
         }
 
     }
+
     //api xóa
     confirmDelete(record) {
         const { data } = this.state;
@@ -142,6 +143,7 @@ export default class ProviderManage extends Component {
                 this.setState({ isLoading: false });
             })
     }
+
     //api tìm kiếm
     handleSearch(value) {
         this.setState({
@@ -175,6 +177,7 @@ export default class ProviderManage extends Component {
         }
 
     }
+
     render() {
         const { data, item, visible, isLoading } = this.state;
         // colums
@@ -226,9 +229,7 @@ export default class ProviderManage extends Component {
                 width: '30%',
                 key: 'action',
                 render: (text, record, index) => (
-
                     <span>
-
                         <Button type="primary" icon={<EditOutlined />} style={{ marginRight: 10, marginLeft: 10 }}
                             onClick={() => this.handleClickBtn(record)}>Update</Button>
                         <>
@@ -241,10 +242,12 @@ export default class ProviderManage extends Component {
                 ),
             },
         ];
+
         //map data
         const datas = data.map(ele => {
             return { key: ele.id, ...ele }
         })
+
         return (
             <>
                 <Header></Header>

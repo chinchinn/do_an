@@ -121,8 +121,7 @@ namespace server.Services
                     name = ele.name,
                     category = ele.category,
                     categoryId = ele.categoryId,
-                    code = ele.code,
-                    capacity = ele.capacity,
+
                     description = ele.description,
                     Evaluations = ele.Evaluations.Where(e => e.status == EvaluationStatus.Confirm).ToList(),
                     Images = ele.Images.Where(i => i.status == ActionStatus.Display).ToList(),
@@ -133,7 +132,8 @@ namespace server.Services
                     //
                     rating = Convert.ToInt32(ele.Evaluations.Where(e => e.status == EvaluationStatus.Confirm).Average(ave => ave.rating)),
                     sale = ele.sale,
-
+                    capacity = ele.capacity,
+                    code = ele.code,
                     status = ele.status,
                     amount = ele.amount,
                     viewCount = ele.viewCount,
@@ -151,7 +151,8 @@ namespace server.Services
                     name = ele.name,
                     category = ele.category,
                     categoryId = ele.categoryId,
-
+                    capacity = ele.capacity,
+                    code = ele.code,
                     description = ele.description,
                     Evaluations = ele.Evaluations.Where(e => e.status == EvaluationStatus.Confirm).ToList(),
                     Images = ele.Images.Where(i => i.status == ActionStatus.Display).ToList(),

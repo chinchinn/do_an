@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, useLocation } from "react-router-dom";
 import 'antd/dist/antd.css';
 // import "antd/dist/reset.css";
 //components
@@ -21,6 +21,7 @@ import { ThemeProvider } from "@livechat/ui-kit";
 
 import "moment-timezone";
 import Chatv1 from "./components/chat/chat";
+import { useState } from "react";
 
 const style = {
   height: 40,
@@ -33,7 +34,7 @@ const style = {
   color: "#fff",
 };
 const displayBlock = {
-  display: "inline-block",
+  display: "block",
 };
 const displayNone = {
   display: "none",
@@ -45,6 +46,8 @@ const defaultTheme = {
     },
   },
 };
+
+
 function App() {
   return (
     <>

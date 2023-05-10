@@ -1,6 +1,8 @@
-import {FETCH_LOADING, FETCH_SUCCESS, FETCH_ERROR, CREATE_EVALUATION_ERROR, CREATE_EVALUATION_LOADING, 
-    CREATE_EVALUATION_SUCCESS, CREATE_FEEDBACK_ERROR, CREATE_FEEDBACK_SUCCESS, CREATE_FEEDBACK_LOADING} 
-from './action-types/evaluations-actions'
+import {
+    FETCH_LOADING, FETCH_SUCCESS, FETCH_ERROR, CREATE_EVALUATION_ERROR, CREATE_EVALUATION_LOADING,
+    CREATE_EVALUATION_SUCCESS, CREATE_FEEDBACK_ERROR, CREATE_FEEDBACK_SUCCESS, CREATE_FEEDBACK_LOADING
+}
+    from './action-types/evaluations-actions'
 import * as evaluationApis from '../api/evaluation.api';
 import * as replyApis from '../api/reply.api';
 
@@ -9,12 +11,13 @@ export const fetch_evaluation = (productId) => {
     return dispatch => {
         dispatch(fetch_loading());
         evaluationApis.getEvaluationsByProductId(productId).then(res => {
+            debugger;
             dispatch(fetch_success(res.data));
         })
-        .catch(err => {
-            dispatch(fetch_error(err));
-        })
-        
+            .catch(err => {
+                dispatch(fetch_error(err));
+            })
+
     }
 }
 export const fetch_loading = () => {
@@ -40,12 +43,12 @@ export const handle_create_evaluation = (evaluation) => {
     return dispatch => {
         dispatch(create_evaluation_loading());
         evaluationApis.createEvaluation(evaluation)
-        .then(res => {
-            dispatch(create_evaluation_success(res.data));
-        })
-        .catch(err => {
-            dispatch(create_evaluation_error(err));
-        })
+            .then(res => {
+                dispatch(create_evaluation_success(res.data));
+            })
+            .catch(err => {
+                dispatch(create_evaluation_error(err));
+            })
     }
 }
 export const create_evaluation_loading = () => {
@@ -70,12 +73,12 @@ export const handle_create_feedback = (feedback) => {
     return dispatch => {
         dispatch(create_feedback_loading());
         replyApis.createReply(feedback)
-        .then(res => {
-            dispatch(create_feedback_success(res.data));
-        })
-        .catch(err => {
-            dispatch(create_feedback_error(err));
-        })
+            .then(res => {
+                dispatch(create_feedback_success(res.data));
+            })
+            .catch(err => {
+                dispatch(create_feedback_error(err));
+            })
     }
 }
 export const create_feedback_loading = () => {

@@ -19,7 +19,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
-
+using System.Security.Authentication;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -168,7 +168,7 @@ namespace server.Services
             if (user != null)
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var passwordResetLink = string.Format("https://localhost:3000/ResetPassword?token={0}&email={1}", token, request.email);
+                var passwordResetLink = string.Format("http://localhost:3000/ResetPassword?token={0}&email={1}", token, request.email);
                 var emailMessage = new MimeMessage();
                 emailMessage.From.Add(new MailboxAddress(_emailConfiguration.From));
                 //var to = new List<MailboxAddress>();
@@ -179,7 +179,7 @@ namespace server.Services
 
                 emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                 {
-                    Text = string.Format("<a href='https://localhost:3000/ResetPassword?token={0}&email={1}'>Nhấp vào link này để Reset Password</a>",
+                    Text = string.Format("<a href='http://localhost:3000/ResetPassword?token={0}&email={1}'>Nhấp vào link này để Reset Password</a>",
                         token, request.email)
                 };
                 return await Send(emailMessage);
@@ -192,7 +192,8 @@ namespace server.Services
             {
                 try
                 {
-                    client.Connect(_emailConfiguration.SmtpServer, _emailConfiguration.Port, true);
+                    client.SslProtocols = SslProtocols.Ssl3 | SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12 | SslProtocols.Tls13;
+                    client.Connect(_emailConfiguration.SmtpServer, _emailConfiguration.Port, false);
                     await client.AuthenticateAsync(_emailConfiguration.Username, _emailConfiguration.Password);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
                     await client.SendAsync(mailMessage);

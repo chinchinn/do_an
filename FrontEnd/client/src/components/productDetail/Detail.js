@@ -133,68 +133,76 @@ class Detail extends Component {
                 </div>
                 <div className="info-detail-product">
                     <div className="body-info-detail-product">
-                        <div>
-                            <h2 style={{ color: '#af9a7d' }}>{product.name}</h2>
-                        </div>
-                        <div className="title-detail-item">
-                            <span className="title-detail"><b>Nhà sản xuất:</b></span><span>
-                                {product.provider ? product.provider.name : 'Không'}</span>
+                        <div style={{ width: "100%" }}>
+                            <div>
+                                <h2 style={{ color: '#af9a7d' }}>{product.name}</h2>
+                            </div>
+                            <div className="title-detail-item">
+                                <span className="title-detail"><b>Nhà sản xuất:</b></span><span>
+                                    {product.provider ? product.provider.name : 'Không'}</span>
 
-                        </div>
-                        <hr />
+                            </div>
+                            <hr />
 
-                        <div className="title-detail-item">
-                            <span className="title-detail"><b>Giá:</b></span>
-                            <span style={{ color: '#f5222d', fontSize: '18px' }}><b>{parsePriceForSale.parsePriceSale(product.price, product.sale) || 0} đ</b></span>
-                        </div>
-                        <div className="title-detail-item">
-                            <span className="title-detail"><b>Giá thị trường:</b></span><span style={
+                            <div className="title-detail-item">
+                                <span className="title-detail"><b>Giá:</b></span>
+                                <span style={{ color: '#f5222d', fontSize: '18px' }}><b>{parsePriceForSale.parsePriceSale(product.price, product.sale) || 0} đ</b></span>
+                            </div>
+                            <div className="title-detail-item">
+                                <span className="title-detail"><b>Giá thị trường:</b></span><span style={
 
-                                product.sale === 0 ? { fontSize: '18px' } : { fontSize: '18px', textDecoration: 'line-through' }}>
-                                {parsePriceForSale.parsePrice(product.price) || 0}<b> đ</b></span>
-                        </div>
-                        <div className="title-detail-item">
-                            <span className="title-detail"><b>Số lượng:</b></span>
-                            <div style={{ border: '2px solid gray', display: 'flex', fontWeight: 'bold' }}>
-                                <div className="mount-item" onClick={() => this.handleDecreasingBtn()}
-                                    style={{ width: '32px', borderRight: '2px solid gray' }}>
-                                    <MinusOutlined min={1}></MinusOutlined>
-                                </div>
-                                <div className="mount-item" style={{ width: '30px' }}><span>{this.state.countItem}</span></div>
-                                <div className="mount-item" onClick={() => this.handleIncreasingBtn()}
-                                    style={{ width: '32px', borderLeft: '2px solid gray' }}>
-                                    <PlusOutlined max={product.amount}></PlusOutlined>
+                                    product.sale === 0 ? { fontSize: '18px' } : { fontSize: '18px', textDecoration: 'line-through' }}>
+                                    {parsePriceForSale.parsePrice(product.price) || 0}<b> đ</b></span>
+                            </div>
+                            <div className="title-detail-item">
+                                <span className="title-detail"><b>Số lượng:</b></span>
+                                <div style={{ border: '2px solid gray', display: 'flex', fontWeight: 'bold' }}>
+                                    <div className="mount-item" onClick={() => this.handleDecreasingBtn()}
+                                        style={{ width: '32px', borderRight: '2px solid gray' }}>
+                                        <MinusOutlined min={1}></MinusOutlined>
+                                    </div>
+                                    <div className="mount-item" style={{ width: '30px' }}><span>{this.state.countItem}</span></div>
+                                    <div className="mount-item" onClick={() => this.handleIncreasingBtn()}
+                                        style={{ width: '32px', borderLeft: '2px solid gray' }}>
+                                        <PlusOutlined max={product.amount}></PlusOutlined>
+                                    </div>
                                 </div>
                             </div>
+                            <div className="title-detail-item">
+                                <span className="title-detail"><b>Dung tích:</b></span><span style={{ fontSize: '18px' }}>
+                                    <div style={{ position: 'relative' }}>
+                                        <div style=
+                                            {{
+                                                position: 'relative',
+                                                overflow: 'hidden',
+                                                borderRadius: '4px'
+                                            }}
+                                            className='swatch-element'
+                                        ><input style={{
+                                            width: '100%', height: '100%', opacity: '0', position: 'absolute', zIndex: 1, top: 0, left: 0,
+                                            cursor: 'pointer'
+                                        }} type='radio' name='capacity' value={product.capacity + "ml"} checked />
+                                            <label for="capacity">{product.capacity + "ml"}</label></div></div><b></b></span>
+                            </div>
+                            <div className="title-detail-item">
+                                <span className="title-detail"><b>Số lượng hàng còn lại:</b></span><span style={{ fontSize: '18px', fontWeight: "bold" }}>
+                                    {product.amount || 0}<b></b></span>
+                            </div>
+
+                            <div className="title-detail-item">
+                                <span className="title-detail"><b>Trạng thái:</b></span><span style={{ fontSize: '18px', fontWeight: "bold" }}>
+                                    {product.amount > 0 ? " Còn hàng" : "Hết hàng"}<b></b></span>
+                            </div>
                         </div>
-                        <div className="title-detail-item">
-                            <span className="title-detail"><b>Dung tích:</b></span><span style={{ fontSize: '18px' }}>
-                                <div style={{ position: 'relative' }}>
-                                    <div style=
-                                        {{
-                                            position: 'relative',
-                                            overflow: 'hidden',
-                                            borderRadius: '4px'
-                                        }}
-                                        className='swatch-element'
-                                    ><input style={{
-                                        width: '100%', height: '100%', opacity: '0', position: 'absolute', zIndex: 1, top: 0, left: 0,
-                                        cursor: 'pointer'
-                                    }} type='radio' name='capacity' value={product.capacity + "ml"} checked />
-                                        <label for="capacity">{product.capacity + "ml"}</label></div></div><b></b></span>
-                        </div>
-                        <div className="title-detail-item">
-                            <span className="title-detail"><b>Số lượng hàng còn lại:</b></span><span style={{ fontSize: '18px' }}>
-                                {product.amount || 0}<b></b></span>
-                        </div>
+
                         <div className="add-cart-detail-page">
-                            <button className="add-cart-btn-detail-page" onClick={() => this.handleAddCartBtn(product)}>
+                            <button className="add-cart-btn-detail-page" onClick={() => this.handleAddCartBtn(product)} disabled={product.amount > 0 ? false : true}>
                                 Thêm giỏ hàng
                             </button>
                         </div>
                     </div>
                 </div>
-            </article>
+            </article >
                 <Descriptions title="" layout="vertical" bordered>
                     {/* <Descriptions.Item className="bold-text" label="Sản phẩm">{product.name}</Descriptions.Item>
                     <Descriptions.Item className="bold-text" label="Nhà sản xuất">{product.provider.name}</Descriptions.Item>
