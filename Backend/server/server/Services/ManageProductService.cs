@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
@@ -32,7 +33,7 @@ namespace server.Services
         {
 
 
-            var check =await _context.products.AnyAsync(x=>x.code == request.code);
+            var check = await _context.products.AnyAsync(x => x.code == request.code);
             if (!check)
             {
                 var tempImages = new List<Image>();
@@ -69,13 +70,12 @@ namespace server.Services
             {
                 return -1;
             }
-           
+
         }
         public async Task<int> Update(ProductUpdateRequest request)
         {
 
-            var check = await _context.products.AnyAsync(x => x.code == request.code);
-            if (!check)
+            try
             {
                 if (request.images != null)
                 {
@@ -162,19 +162,18 @@ namespace server.Services
                 await _context.SaveChangesAsync();
                 return product.id;
             }
+            catch (Exception ex) { return 0; }
 
-            else
-            {
-                return -1;
-            }
+
+
             //
-            
+
 
         }
         public async Task<int> Delete(int productId)
         {
             var product = await _context.products.FindAsync(productId);
-            if(product == null)
+            if (product == null)
             {
                 throw new ShopException($"Cannot find any product to this product id {productId}!");
             }
@@ -201,7 +200,6 @@ namespace server.Services
                     amount = rs.amount,
                     viewCount = rs.viewCount,
                     description = rs.description,
-                    
                     Images = rs.Images.Where(p => p.status == ActionStatus.Display).ToList(),
                     rating = Convert.ToInt32(rs.Evaluations.Average(ave => ave.rating)),
                     provider = rs.provider,
@@ -212,7 +210,7 @@ namespace server.Services
             return await data.ToListAsync();
         }
 
-        
+
 
         public async Task<PagedResult<ProductViewModel>> GetAllPaging(GetProductPagingRequest request)
         {
@@ -233,7 +231,8 @@ namespace server.Services
             var data = await query.Include(eva => eva.Evaluations.Where(e => e.status == EvaluationStatus.Confirm))
                 .Include(img => img.Images.Where(i => i.status == ActionStatus.Display))
                 .OrderBy(x => x.categoryId).Skip((request.pageIndex - 1) * request.pageSize)
-                .Take(request.pageSize).Select(rs => new ProductViewModel {
+                .Take(request.pageSize).Select(rs => new ProductViewModel
+                {
                     id = rs.id,
                     name = rs.name,
                     price = rs.price,
@@ -265,12 +264,13 @@ namespace server.Services
         {
             var product = await _context.products.Include(eva => eva.Evaluations)
                 .Include(img => img.Images)
-                .Select(ele => new ProductViewModel() {
+                .Select(ele => new ProductViewModel()
+                {
                     id = ele.id,
                     name = ele.name,
                     category = ele.category,
                     categoryId = ele.categoryId,
-                  
+
                     description = ele.description,
                     Evaluations = ele.Evaluations.Where(e => e.status == EvaluationStatus.Confirm).ToList(),
                     Images = ele.Images.Where(i => i.status == ActionStatus.Display).ToList(),
@@ -280,13 +280,13 @@ namespace server.Services
                     providerId = ele.providerId,
                     rating = ele.rating,
                     sale = ele.sale,
-                    
+
                     status = ele.status,
                     amount = ele.amount,
                     viewCount = ele.viewCount,
                 })
                 .FirstOrDefaultAsync(x => x.id == productId);
-            
+
             var temp = product;
             return temp;
         }
@@ -302,11 +302,11 @@ namespace server.Services
         public async Task<List<ProductViewModel>> searchProduct(ProductSearchRequest request)
         {
             var data = _context.products.AsQueryable();
-            if(request.categoryId.Value != 0)
+            if (request.categoryId.Value != 0)
             {
                 data = data.Where(ele => ele.categoryId == request.categoryId);
             }
-            if(request.providerId.Value != 0)
+            if (request.providerId.Value != 0)
             {
                 data = data.Where(ele => ele.providerId == request.providerId);
             }
@@ -316,7 +316,7 @@ namespace server.Services
                .Contains(request.searchKey.ToLower())
                );
             }
-            
+
 
             return await data.Where(i => i.status == ActionStatus.Display).Select(rs => new ProductViewModel
             {
@@ -327,9 +327,9 @@ namespace server.Services
                 sale = rs.sale,
                 categoryId = rs.categoryId,
                 category = rs.category,
-             
+
                 description = rs.description,
-                
+
                 Images = rs.Images.Where(p => p.status == ActionStatus.Display).ToList(),
                 rating = Convert.ToInt32(rs.Evaluations.Average(ave => ave.rating)),
                 provider = rs.provider,

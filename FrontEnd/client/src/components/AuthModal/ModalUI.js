@@ -13,6 +13,7 @@ import ForgetPassword from "./ForgetPassword/ForgetPassword";
 import axiosInstance from "../../utils/axiosInstance";
 import SignInV2 from "./SignIn/SignInV2";
 import SignUpV2 from "./SignUp/SignUpV2";
+import ForgetPasswordV2 from "./ForgetPassword/ForgetPasswordV2";
 
 const { TabPane } = Tabs;
 
@@ -33,6 +34,7 @@ class ModalUI extends Component {
   }
 
   callback(key) {
+    debugger;
     this.setState({
       active: key,
     });
@@ -110,9 +112,9 @@ class ModalUI extends Component {
             </TabPane>
             <TabPane tab="" key="3">
               {this.state.active === "3" ? (
-                <ForgetPassword
+                <ForgetPasswordV2
                   onForgot={this.handleForgotPassword.bind(this)}
-                ></ForgetPassword>
+                ></ForgetPasswordV2>
               ) : null}
             </TabPane>
           </Tabs>

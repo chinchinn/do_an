@@ -5,8 +5,6 @@ import '../../../components/common/styleCommon/Content.css';
 import axiosInstance from '../../../utils/axiosInstance';
 import BreadScrumb from '../../../components/breadScrumb/BreadScrumb';
 import { Table, Tag, Button, Spin, message, Popconfirm, Input, Row, Col, Select } from 'antd';
-import { colors } from '../../../utils/colors';
-import { sizes } from '../../../utils/sizes';
 import { EditOutlined, DeleteOutlined, EyeOutlined, ImportOutlined, SaveOutlined } from '@ant-design/icons';
 import ModalProduct from '../../../components/product/modalProduct/ModalProduct';
 import ModalProductV2 from '../../../components/product/modalProduct/ModalProductV2';
@@ -33,6 +31,7 @@ export default class ProductManage extends Component {
     }
   }
   handleClickBtn(record = null) {
+    debugger;
     this.setState({
       visible: true,
       item: { ...record }
@@ -159,19 +158,12 @@ export default class ProductManage extends Component {
 
         })
         .then(data => {
-          debugger;
           if (data?.code != 99) {
             let tempData = [...this.state.data].filter(ele => ele.id !== values.id);
             let pageDefault = Math.ceil((tempData.length + 1) / this.state.pageSize);
             message.success(`${data.message}`, 2)
-            this.setState({
-              isLoading: false,
-              visible: false,
-              pageDefault: pageDefault,
-              data: [...tempData, data.product]
-            })
+            this.callApi();
           }
-
           else {
             message.error(`${data.message}`, 2)
             this.setState({

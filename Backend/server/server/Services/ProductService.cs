@@ -49,7 +49,7 @@ namespace server.Services
                     sale = rs.sale,
                     categoryId = rs.categoryId,
                     category = rs.category,
-                  
+
                     description = rs.description,
                     Evaluations = rs.Evaluations,
                     Images = rs.Images,
@@ -80,7 +80,7 @@ namespace server.Services
                     sale = rs.sale,
                     categoryId = rs.categoryId,
                     category = rs.category,
-                 
+
                     amount = rs.amount,
                     viewCount = rs.viewCount,
                     description = rs.description,
@@ -93,18 +93,19 @@ namespace server.Services
 
                 }).ToListAsync();
             var total = data.Count;
-            return new TotalProductViewModel { products = data.Take(itemCount).ToList(), totalColumns = total};
+            return new TotalProductViewModel { products = data.Take(itemCount).ToList(), totalColumns = total };
         }
 
         public async Task<List<CategoryViewModel>> getListCategoryByGeneralityName(string generalityName)
         {
             var listCategory = await _context.categories.Where(x => x.generalityName.Equals(generalityName))
-                .Select(rs => new CategoryViewModel { 
+                .Select(rs => new CategoryViewModel
+                {
                     id = rs.id,
                     name = rs.name,
                     status = ActionStatus.Display,
                     generalityName = rs.generalityName,
-                    
+
                 })
                 .ToListAsync();
             return listCategory;
@@ -120,7 +121,7 @@ namespace server.Services
                     name = ele.name,
                     category = ele.category,
                     categoryId = ele.categoryId,
-                 
+
                     description = ele.description,
                     Evaluations = ele.Evaluations.Where(e => e.status == EvaluationStatus.Confirm).ToList(),
                     Images = ele.Images.Where(i => i.status == ActionStatus.Display).ToList(),
@@ -131,7 +132,8 @@ namespace server.Services
                     //
                     rating = Convert.ToInt32(ele.Evaluations.Where(e => e.status == EvaluationStatus.Confirm).Average(ave => ave.rating)),
                     sale = ele.sale,
-                 
+                    capacity = ele.capacity,
+                    code = ele.code,
                     status = ele.status,
                     amount = ele.amount,
                     viewCount = ele.viewCount,
@@ -149,7 +151,8 @@ namespace server.Services
                     name = ele.name,
                     category = ele.category,
                     categoryId = ele.categoryId,
-                   
+                    capacity = ele.capacity,
+                    code = ele.code,
                     description = ele.description,
                     Evaluations = ele.Evaluations.Where(e => e.status == EvaluationStatus.Confirm).ToList(),
                     Images = ele.Images.Where(i => i.status == ActionStatus.Display).ToList(),
@@ -164,14 +167,14 @@ namespace server.Services
                     viewCount = ele.viewCount,
                 })
                 .FirstOrDefaultAsync(x => x.id == productId);
-            
-            
+
+
             return product;
         }
 
         public async Task<List<ProductViewModel>> GetTopViewCountProduct(bool all = false)
         {
-            if(all == false)
+            if (all == false)
             {
                 var data = await _context.products.Where(x => x.status == ActionStatus.Display)
                     .OrderByDescending(x => x.viewCount).Take(4)
@@ -184,7 +187,7 @@ namespace server.Services
                     sale = rs.sale,
                     categoryId = rs.categoryId,
                     category = rs.category,
-                
+
                     amount = rs.amount,
                     viewCount = rs.viewCount,
                     description = rs.description,
@@ -211,7 +214,7 @@ namespace server.Services
                     sale = rs.sale,
                     categoryId = rs.categoryId,
                     category = rs.category,
-              
+
                     amount = rs.amount,
                     viewCount = rs.viewCount,
                     description = rs.description,
@@ -238,7 +241,7 @@ namespace server.Services
                     sale = rs.sale,
                     categoryId = rs.categoryId,
                     category = rs.category,
-                
+
                     amount = rs.amount,
                     viewCount = rs.viewCount,
                     description = rs.description,
@@ -249,11 +252,11 @@ namespace server.Services
                     providerId = rs.providerId,
                     status = rs.status
 
-                }).Skip((request.pageCurrent - 1)*request.pageSize).Take(request.pageSize).ToListAsync();
+                }).Skip((request.pageCurrent - 1) * request.pageSize).Take(request.pageSize).ToListAsync();
             return data;
         }
 
-        
+
 
         public async Task<List<ProductViewModel>> SearchProducts(Helper.SearchProductRequest request)
         {
@@ -266,7 +269,7 @@ namespace server.Services
             {
                 products = products.Where(ele => ele.categoryId == request.categoryId.Value);
             }
-            if(request.toPrice.HasValue)
+            if (request.toPrice.HasValue)
             {
                 var toPrice = request.fromPrice.HasValue ? request.fromPrice.Value : 0;
                 products = products.Where(ele => ele.price >= toPrice && ele.price <=
@@ -275,7 +278,7 @@ namespace server.Services
             if (request.rating.HasValue)
             {
                 products = products.Where(x => x.rating >= request.rating.Value);
-                 
+
             }
             IQueryable<Product> list = products.Where(i => i.status == ActionStatus.Display);
             var total = list.Count();
@@ -288,7 +291,7 @@ namespace server.Services
                 sale = rs.sale,
                 categoryId = rs.categoryId,
                 category = rs.category,
-            
+
                 description = rs.description,
 
                 Images = rs.Images.Where(p => p.status == ActionStatus.Display).ToList(),
@@ -298,9 +301,9 @@ namespace server.Services
                 status = rs.status,
                 totalColumns = total,
 
-            }).Skip((request.currentPage.Value - 1)*request.pageSize.Value).Take(request.pageSize.Value).ToListAsync();
+            }).Skip((request.currentPage.Value - 1) * request.pageSize.Value).Take(request.pageSize.Value).ToListAsync();
         }
 
-        
+
     }
 }

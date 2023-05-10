@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { Modal, Input, Form, Upload, Select, Row, Col, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import axiosInstance from '../../../utils/axiosInstance';
-import { colors } from '../../../utils/colors';
-import { sizes } from '../../../utils/sizes';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import queryString from 'querystring';
@@ -31,9 +29,9 @@ function ModalProductV2(props) {
         sizes: [],
     });
 
-    const [validate, setValidate] = useState(false);
 
-    const { categories, providers, colors, sizes } = modalProduct;
+
+    const { categories, providers } = modalProduct;
     const { data, visible } = props;
 
 
@@ -42,9 +40,7 @@ function ModalProductV2(props) {
         Promise.all([
             axiosInstance('ManageCategory', 'GET'),
             axiosInstance('ManageProvider', 'GET'),
-
         ]).then(res => {
-            debugger;
             setModalProduct({
                 ...modalProduct,
                 categories: [...res[0].data],
@@ -54,22 +50,7 @@ function ModalProductV2(props) {
                 }) : [],
             })
         })
-        // axiosInstance('ManageCategory', 'GET')
-        //     .then(res => {
-        //         setModalProduct({
-        //             ...modalProduct,
-        //             categories: [...res.data]
-        //         })
-        //     });
-        // axiosInstance('ManageProvider', 'GET')
-        //     .then(res => {
 
-
-        //         setModalProduct({
-        //             ...modalProduct,
-        //             providers: [...res.data]
-        //         })
-        //     })
     }, [props.data])
 
     useEffect(() => {
@@ -92,7 +73,6 @@ function ModalProductV2(props) {
     }
     function handleChange({ fileList }) {
 
-
         setModalProduct({ ...modalProduct, imageList: fileList })
 
     }
@@ -110,7 +90,7 @@ function ModalProductV2(props) {
 
         const { imageList } = modalProduct;
         const { data } = props;
-        console.log(values);
+
         values = form.getFieldsValue();
         var item = values;
 
@@ -131,14 +111,17 @@ function ModalProductV2(props) {
     }
 
     const validateCode = async (rule, value) => {
-        debugger;
-        let check = await axiosInstance(`ManageProduct/check-duplicate?${queryString.stringify({
-            code: value,
-        })}`, 'GET')
-            .then(res => res.data);
 
-        if (check) {
-            throw new Error('Mã code bị lặp');
+        if (!data.code) {
+            let check = await axiosInstance(`ManageProduct/check-duplicate?${queryString.stringify({
+                code: value,
+            })}`, 'GET')
+                .then(res => res.data);
+
+            if (check) {
+                throw new Error('Mã code bị lặp');
+            }
+
         }
 
 
@@ -184,7 +167,6 @@ function ModalProductV2(props) {
                         amount: data.amount,
                         viewCount: data.viewCount,
                     }
-
                 }
                     form={form}>
                     <Row>
@@ -215,7 +197,7 @@ function ModalProductV2(props) {
                                 // validateStatus={!validate ? "success" : "error"}
 
                                 label="Mã sản phẩm" {...config}>
-                                <Input type="text" maxLength={10} placeholder="Mã sản phẩm"></Input>
+                                <Input disabled={data?.code ? true : false} type="text" maxLength={10} placeholder="Mã sản phẩm"></Input>
                             </Form.Item>
                             <Form.Item name="name" rules={[
                                 {

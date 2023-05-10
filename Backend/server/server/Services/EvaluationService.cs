@@ -83,7 +83,7 @@ namespace server.Services
 
         public async Task<List<EvaluationViewModel>> getEvaluationsByProductId(int productId)
         {
-            var evaluations = await _context.evaluations.Where(eva => eva.productId == productId && eva.status == EvaluationStatus.Confirm)
+            var evaluations = await _context.evaluations.Where(eva => eva.productId == productId && eva.status == EvaluationStatus.Decline)
                 .Include(rp => rp.Replies)
                 .Select(rs => new EvaluationViewModel
                 {
