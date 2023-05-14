@@ -12,8 +12,6 @@ const config = {
 }
 export default class ModalProvider extends Component {
     handleSubmit(e) {
-
-      
         const { data } = this.props;
         this.props.onSubmitForm({
             id: data.id,
@@ -67,7 +65,7 @@ export default class ModalProvider extends Component {
                             ]} {...config}
                                 validateTrigger={['onChange']}
                                 label="Mã nhà cung cấp" >
-                                <Input type="text" maxLength={10} placeholder="mã nhà cung cấp"></Input>
+                                <Input disabled={data?.code ? true : false} type="text" maxLength={10} placeholder="mã nhà cung cấp"></Input>
                             </Form.Item>
                             <Form.Item name="name" rules={[
                                 {
