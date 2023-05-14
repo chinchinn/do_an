@@ -47,7 +47,7 @@ export default class Order extends Component {
 
                     <Tag style={{ width: 100 }} icon={status === 2 ? <SyncOutlined spin /> : status === 3 ? <CheckCircleOutlined /> : <MinusCircleOutlined></MinusCircleOutlined>}
                         color={status === 2 ? '#2db7f5' : status === 3 ? '#87d068' : '#f50'}>
-                        {status === 2 ? 'Shipping' : status === 3 ? 'received' : 'Not Confirm'}
+                        {status === 2 ? 'Đang vận chuyển' : status === 3 ? 'received' : 'Chưa duyệt'}
                     </Tag>
 
 
@@ -72,22 +72,18 @@ export default class Order extends Component {
                 render: total => <strong style={{ color: '#87d068' }}>{(total).toLocaleString('vi-VN')} đ</strong>
             },
             {
-                title: 'Chi tiết',
+                title: 'Thao tác',
                 render: (text, record, index) => (
                     <span>
 
                         <Button type="primary" icon={<EditOutlined />}
                             onClick={() => this.handleViewDetail(record)}>Chi tiết</Button>
-
+                        <Button style={{ marginLeft: 4 }} disabled={record.status === 3 ? 'disabled' : null}
+                            icon={<StopOutlined />} onClick={() => this.CancelOrder(record)} danger>Hủy đơn hàng</Button>
                     </span>
                 ),
-            },
-
-
-            {
-                render: (record) => <Button disabled={record.status === 3 ? 'disabled' : null}
-                    icon={<StopOutlined />} onClick={() => this.CancelOrder(record)} danger>Cancel</Button>
             }
+
 
         ];
         return (
