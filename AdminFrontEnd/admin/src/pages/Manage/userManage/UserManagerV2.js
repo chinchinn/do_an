@@ -201,7 +201,7 @@ function UserManagerV2() {
     const popupModelAdd = () => {
 
         return (<Modal
-            title="AddUser"
+            title="Thêm tài khoản"
             visible={showModelAdd}
             onOk={addUser}
             confirmLoading={userManager.isLoading}
@@ -417,8 +417,8 @@ function UserManagerV2() {
                                 <Select placeholder="Status" style={{ width: 250 }}
                                     onChange={(e) => handleChangeStatus(e)}
                                 >
-                                    <Select.Option value={0}>Active</Select.Option>
-                                    <Select.Option value={1}>InActive</Select.Option>
+                                    <Select.Option value={0}>Hoạt động</Select.Option>
+                                    <Select.Option value={1}>Không hoạt động</Select.Option>
                                 </Select>
                             </Col>
                             <Col span={8}>
@@ -426,11 +426,11 @@ function UserManagerV2() {
                                     icon={<SearchOutlined />}
                                     onClick={handleSearch}
                                 >
-                                    Search
+                                    Tìm kiếm
                                 </Button>
-                                <Button onClick={handleReset} style={{ marginRight: '10px' }} icon={<SyncOutlined />}>Reset</Button>
+                                <Button onClick={handleReset} style={{ marginRight: '10px' }} icon={<SyncOutlined />}>Cập nhật lại mật khẩu</Button>
 
-                                <Button onClick={() => setShowModelAdd(true)} style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }} icon={<ImportOutlined />}>Add User</Button>
+                                <Button onClick={() => setShowModelAdd(true)} style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }} icon={<ImportOutlined />}>Thêm tài khoản</Button>
                             </Col>
 
                         </Row>

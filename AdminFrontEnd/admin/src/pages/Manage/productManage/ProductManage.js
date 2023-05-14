@@ -33,7 +33,7 @@ export default class ProductManage extends Component {
     }
   }
   handleClickBtn(record = null) {
-    
+
     this.setState({
       visible: true,
       item: { ...record }
@@ -122,7 +122,7 @@ export default class ProductManage extends Component {
       })
       axiosInstance('ManageProduct', 'POST', productCreate)
         .then(res => {
-        
+
           this.setState({
             data: [...this.state.data, res.data],
             isLoading: false,
@@ -190,7 +190,7 @@ export default class ProductManage extends Component {
           message.success(`${res.data.message}`, 2)
           this.setState({
             data: [...tempData].map(x => {
-           
+
               if (x.id === record.id) {
                 return { ...x, status: 1 }
               }
@@ -211,7 +211,7 @@ export default class ProductManage extends Component {
           message.success(`Cập nhật thành công`, 2)
           this.setState({
             data: [...tempData].map(x => {
-          
+
               if (x.id === record.id) {
                 return { ...x, status: 0 }
               }
@@ -364,17 +364,17 @@ export default class ProductManage extends Component {
         title: 'Trạng thái',
         dataIndex: 'status',
         key: 'status',
-        render: text => <span><Button style={text === 0 ? { background: '#4abd2b ', color: '#ffffff' } : { background: '#c10417', color: '#ffffff' }}>{text === 1 ? "Unactive" : "Active"}</Button></span>
+        render: text => <span><Button style={text === 0 ? { background: '#4abd2b ', color: '#ffffff' } : { background: '#c10417', color: '#ffffff' }}>{text === 1 ? "Không hoạt động" : "Hoạt động"}</Button></span>
       },
       {
-        title: (<Button icon={<ImportOutlined />} onClick={() => this.handleClickBtn()} style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }}>Add product</Button>),
-        key: 'action',
+        title: (<Button icon={<ImportOutlined />} onClick={() => this.handleClickBtn()} style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }}>Thêm sản phẩm</Button>),
+        key: 'Thao tác',
         width: '25%',
         render: (text, record, index) => (
           <span>
 
             <Button type="primary" icon={<EditOutlined />} style={{ marginRight: 10, marginLeft: 10 }} disabled={record.status === 0 ? false : true}
-              onClick={() => this.handleClickBtn(record)}>Update</Button>
+              onClick={() => this.handleClickBtn(record)}>Cập nhật</Button>
             <Popconfirm placement="left" title={record.status === 0 ? warn : updateStatus} onConfirm={() => this.confirmDelete(record)} okText="Yes" cancelText="No">
               {record.status === 0 ? <Button icon={<DeleteOutlined />} type="danger">Xóa</Button>
                 : <Button icon={<RotateLeftOutlined />}

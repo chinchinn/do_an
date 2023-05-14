@@ -5,8 +5,8 @@ import ModalViewOrderDetail from '../../../components/order/modalOrder/ModalView
 import ModalCancelOrder from '../../../components/order/modalOrder/ModalCancelOrder';
 import '../../../components/common/styleCommon/Content.css';
 import BreadScrumb from '../../../components/breadScrumb/BreadScrumb';
-import { Table, Button, Row, Col, Input,  Popconfirm, Spin, message, DatePicker, Form } from 'antd';
-import {RotateLeftOutlined, EditOutlined, DeleteOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';
+import { Table, Button, Row, Col, Input, Popconfirm, Spin, message, DatePicker, Form } from 'antd';
+import { RotateLeftOutlined, EditOutlined, DeleteOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import axiosInstance from '../../../utils/axiosInstance';
 import queryString from 'querystring';
 import moment from 'moment';
@@ -15,30 +15,30 @@ import './css/OrderNotConfirm.css';
 
 
 
-const {Search} = Input;
+const { Search } = Input;
 const { RangePicker } = DatePicker;
 
 const OK = "Xác nhận chuyển trạng thái Đang Vận Chuyển cho đơn hàng này!";
 const Cancel = "Xác nhận Hủy Đơn Hàng!";
 //
-function getPictureDetail(array){
+function getPictureDetail(array) {
     const temp = array.filter((ele) => ele.status === 0);
-    if(temp.length <= 0){
+    if (temp.length <= 0) {
         return null;
     }
     return temp[0].urlImage;
 }
 //expect: two > one.
 function compareDates(one, two) {
-    
+
     var dateOne = new Date(one); //Year, Month, Date
     var dateTwo = new Date(two); //Year, Month, Date
-    
-    if (dateOne <= dateTwo) {    
-        return false;    
-    }else {    
-        return true;   
-    } 
+
+    if (dateOne <= dateTwo) {
+        return false;
+    } else {
+        return true;
+    }
 }
 //
 function formatMomentArray(arrayMoment) {
@@ -48,7 +48,7 @@ function formatMomentArray(arrayMoment) {
     return result;
 }
 export default class OrderNotConfirm extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             orderNotConfirm: [],
@@ -68,18 +68,19 @@ export default class OrderNotConfirm extends Component {
         }
     }
     //call api
-    callApi = async() => {
+    callApi = async () => {
         this.setState({
             isLoading: true
         })
         let order = await axiosInstance(`ManageOrder/GetAllOrderNotConfirm`, 'GET')
-        .then(res => res.data);
+            .then(res => res.data);
         const formatList = [...order].map((ele) => {
-            return {id: ele.id,
+            return {
+                id: ele.id,
                 address: ele.address,
                 createDate: ele.createDate,
                 //email: ele.email,
-                customer: !!ele.guess? ele.guess:ele.user.displayname,
+                customer: !!ele.guess ? ele.guess : ele.user.displayname,
                 note: ele.note,
                 contact: [ele.email, ele.phone],
                 //phone: ele.phone,
@@ -93,48 +94,47 @@ export default class OrderNotConfirm extends Component {
                 key: ele.id
             }
         })
-        
+
         this.setState({
             orderNotConfirm: formatList,
             isLoading: false,
         })
     }
     //
-    async componentDidMount(){
+    async componentDidMount() {
         await this.callApi();
     }
     //chuyển hàng
     async confirmShipping(record) {
         let check = compareDates(moment(record.deliveryDate).format('YYYY/MM/DD'), moment(new Date()).format('YYYY/MM/DD'));
         console.log(check);
-        if(check)
-        {
+        if (check) {
             this.setState({
                 isLoading: true,
             })
-            let list = await axiosInstance(`ManageOrder/ConfirmShippingAndSendMailBillOrder`,'POST', {orderId: record.id, status: 2})
-            .then(res => res.data);
-            if(list === true){
+            let list = await axiosInstance(`ManageOrder/ConfirmShippingAndSendMailBillOrder`, 'POST', { orderId: record.id, status: 2 })
+                .then(res => res.data);
+            if (list === true) {
                 message.success('Đã gửi Hóa đơn cho khách hàng qua Email và chuyển sang trạng thái Giao hàng!', 4)
                 this.callApi();
-            }else{
+            } else {
                 message.warning('Chuyển trạng thái Giao hàng thất bại!', 4)
                 this.setState({
                     isLoading: false,
                 })
             }
         }
-        else{
+        else {
             message.warning('Đơn hàng đã quá hạn vận chuyển!', 4);
         }
-        
+
     }
     //xem chi tiết
-    handleViewDetail = async(record) => {
+    handleViewDetail = async (record) => {
         let list = await axiosInstance(`ManageOrder/GetOrderDetailByOrderId?${queryString.stringify({
             orderId: record.id
-        })}`,'GET')
-        .then(res => res.data);
+        })}`, 'GET')
+            .then(res => res.data);
         const orderDetails = list.map((ele) => {
             return {
                 id: ele.id,
@@ -161,7 +161,7 @@ export default class OrderNotConfirm extends Component {
     }
     //hủy đơn hàng
     confirmCancelOrder = (record) => {
-        
+
         this.setState({
             isLoading: true,
             visibleCancel: true,
@@ -169,54 +169,54 @@ export default class OrderNotConfirm extends Component {
         })
     }
     //hide modal detail
-    handleCancel(value){
+    handleCancel(value) {
         this.setState({
             visible: value,
         })
         this.callApi();
     }
     //hide modal cancel
-    handleCancelModal(){
+    handleCancelModal() {
         this.setState({
             visibleCancel: false,
             isLoading: false,
         })
     }
     //handle cancel order
-    async handleCancelOrder(note, orderId){
+    async handleCancelOrder(note, orderId) {
         this.setState({
             isLoading: true,
             visibleCancel: false,
         })
-        let list = await axiosInstance(`ManageOrder/CancelOrder`,'POST', 
-        {orderId: orderId, status: 1, statusRollBack: 0, note: note})
-        .then(res => res.data);
-        if(list === true){
+        let list = await axiosInstance(`ManageOrder/CancelOrder`, 'POST',
+            { orderId: orderId, status: 1, statusRollBack: 0, note: note })
+            .then(res => res.data);
+        if (list === true) {
             message.success('Đã hủy Đơn hàng thành công!', 4)
             this.callApi();
-        }else{
+        } else {
             message.warning('Hủy Đơn hàng thất bại!', 4);
             this.setState({
-                
+
                 isLoading: false,
             })
         }
-        
+
     }
     //
-    handleChangePicker(momentDate, stringDate){
+    handleChangePicker(momentDate, stringDate) {
         this.setState({
             rangePicker: momentDate,
         })
     }
     //
-    handleChangeInput(e){
+    handleChangeInput(e) {
         this.setState({
             keyWord: e.target.value,
         })
     }
     //
-    async handleReset(){
+    async handleReset() {
         await this.callApi();
     }
     //
@@ -224,22 +224,23 @@ export default class OrderNotConfirm extends Component {
         this.setState({
             isLoading: true
         });
-        const {keyWord, rangePicker} = this.state;
+        const { keyWord, rangePicker } = this.state;
         const dates = formatMomentArray(rangePicker);
-        let list = await axiosInstance('ManageOrder/SearchProduct', 'POST', 
-        {keyWord: keyWord, startDate: dates[0], endDate: dates[1], status: 0})
-        .then(res => res.data).catch(err => {
-            message.error('Tìm kiếm thất bại!', 4);
-            this.setState({
-                isLoading: false,
+        let list = await axiosInstance('ManageOrder/SearchProduct', 'POST',
+            { keyWord: keyWord, startDate: dates[0], endDate: dates[1], status: 0 })
+            .then(res => res.data).catch(err => {
+                message.error('Tìm kiếm thất bại!', 4);
+                this.setState({
+                    isLoading: false,
+                });
             });
-        });
         const formatList = [...list].map((ele) => {
-            return {id: ele.id,
+            return {
+                id: ele.id,
                 address: ele.address,
                 createDate: ele.createDate,
                 //email: ele.email,
-                customer: !!ele.guess? ele.guess:ele.user.displayname,
+                customer: !!ele.guess ? ele.guess : ele.user.displayname,
                 note: ele.note,
                 contact: [ele.email, ele.phone],
                 //phone: ele.phone,
@@ -252,7 +253,7 @@ export default class OrderNotConfirm extends Component {
                 key: ele.id
             }
         })
-        
+
         this.setState({
             orderNotConfirm: formatList,
             isLoading: false,
@@ -260,9 +261,9 @@ export default class OrderNotConfirm extends Component {
     }
     render() {
         //
-        const {orderNotConfirm, isLoading, visible, visibleCancel, orderDetailList, customerItem, 
-            note ,feeShip, orderId} = this.state;
-        
+        const { orderNotConfirm, isLoading, visible, visibleCancel, orderDetailList, customerItem,
+            note, feeShip, orderId } = this.state;
+
         //headers
         const columns = [
             {
@@ -272,13 +273,13 @@ export default class OrderNotConfirm extends Component {
                 width: '12%',
                 render: text => <span>{text}</span>,
             },
-            
+
             {
                 title: 'LIÊN HỆ',
                 key: 'contact',
                 dataIndex: 'contact',
                 width: '12%',
-                render: text => text.map((e, i) => {return <div key={i}>{e}</div>})
+                render: text => text.map((e, i) => { return <div key={i}>{e}</div> })
             },
             {
                 title: 'ĐỊA CHỈ',
@@ -308,121 +309,121 @@ export default class OrderNotConfirm extends Component {
                 dataIndex: 'deliveryDate',
                 render: text => <span >{moment(text).format('DD/MM/YYYY')}</span>
             },
-            
+
             {
                 title: 'TÙY CHỌN',
                 key: 'action',
                 align: 'center',
                 width: '28%',
                 render: (text, record, index) => (
-                  <span>
-        
-                    <Button type="primary" icon={<EditOutlined />}
-                      onClick={() => this.handleViewDetail(record)}>Chi tiết</Button>
-                    <Popconfirm disabled={record.enableOrder ? null : 'disabled'} placement="left" title={OK} 
-                    onConfirm={() => this.confirmShipping(record)} okText="Yes" 
-                    cancelText="No">
-                      <Button disabled={record.enableOrder ? null : 'disabled'} icon={<RotateLeftOutlined />} 
-                      style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white', margin: '5px 10px' }}>Duyệt</Button>
-                    </Popconfirm>
-                    {/*
+                    <span>
+
+                        <Button type="primary" icon={<EditOutlined />}
+                            onClick={() => this.handleViewDetail(record)}>Chi tiết</Button>
+                        <Popconfirm disabled={record.enableOrder ? null : 'disabled'} placement="left" title={OK}
+                            onConfirm={() => this.confirmShipping(record)} okText="Yes"
+                            cancelText="No">
+                            <Button disabled={record.enableOrder ? null : 'disabled'} icon={<RotateLeftOutlined />}
+                                style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white', margin: '5px 10px' }}>Duyệt</Button>
+                        </Popconfirm>
+                        {/*
                     <Popconfirm placement="left" title={Cancel} onConfirm={() => this.confirmCancelOrder(record)} okText="Yes" 
                     cancelText="No">
                       <Button onClick={() => this.confirmCancelOrder(record)} icon={<DeleteOutlined />} 
                       type="danger">Hủy</Button>
                     </Popconfirm>
                     */}
-                    <Button onClick={() => this.confirmCancelOrder(record)} icon={<DeleteOutlined />} 
-                      type="danger">Hủy</Button>
-                  </span>
+                        <Button onClick={() => this.confirmCancelOrder(record)} icon={<DeleteOutlined />}
+                            type="danger">Hủy</Button>
+                    </span>
                 ),
-              },
+            },
         ];
-        
+
         return (
             <>
-            <Header></Header>   
+                <Header></Header>
                 <div className="main_container">
                     <Sidebar isActive="3"></Sidebar>
                     <div className="content">
                         <Spin spinning={isLoading} tip="LOADING...">
-                        <BreadScrumb title="Đơn hàng chưa duyệt"></BreadScrumb>
-                        <br/>
-                        <Row style={{marginTop: 10}}>
-                            
-                            <Col span={8}>
-                                <Col span={16} offset={6}>
-                                <Input
-                                    
-                                    placeholder="Search..."
-                                    value={this.state.keyWord}
-                                    allowClear={true}
-                                    onChange={this.handleChangeInput.bind(this)}
-                                />
-                                </Col>
-                                
-                            </Col>
-                            <Col span={7}>
-                                
-                                <RangePicker 
-                                value={this.state.rangePicker}
-                                onChange={this.handleChangePicker.bind(this)}/>
-                            </Col>
-                            <Col span={2}>
-                                <Button style={{borderColor: '#0050b3', color: '#0050b3'}} icon={<SearchOutlined />}
-                                onClick={this.handleSearch.bind(this)}
-                                >
-                                    Search
-                                </Button>
-                            
-                            </Col>
-                            <Col span={7}>
-                                
-                                <Button onClick={this.handleReset.bind(this)} icon={<SyncOutlined />}>Reset</Button>
-                                
-                            </Col>
-                            
-                        </Row>
-                        <br/>
-                        <Row>
-                            <Col span={24}>
-                            <Table style={{ margin: '10px' }} columns={columns} dataSource={orderNotConfirm}
-                            scroll={true}
-                            rowClassName={(record, index) => (record.enableOrder ? "green" : "red")}
-                            pagination={{
-                                position: ["bottomCenter", "bottomCenter"],
-                                defaultPageSize: this.state.pageSize,
-                                defaultCurrent: this.state.pageDefault
-                              }}>
+                            <BreadScrumb title="Đơn hàng chưa duyệt"></BreadScrumb>
+                            <br />
+                            <Row style={{ marginTop: 10 }}>
 
-                            </Table>
-                            </Col>
-                        </Row>
-                        {/*Modal Detail */}
-                        {
-                            visible ?
-                            <ModalViewOrderDetail 
-                            visible={visible} 
-                            onCancel={this.handleCancel.bind(this)}
-                            data={orderDetailList}
-                            feeShip={feeShip}
-                            customer={customerItem}
-                            note={note}
-                            status={0}
-                            >
-                            </ModalViewOrderDetail> : null
-                        }
-                        {/*Modal Cancel */}
-                        {
-                            visibleCancel ?
-                            <ModalCancelOrder 
-                            visible={visibleCancel}
-                            onOk={this.handleCancelOrder.bind(this)}
-                            onCancel={this.handleCancelModal.bind(this)}
-                            orderId={orderId}
-                            >
-                            </ModalCancelOrder> : null
-                        }
+                                <Col span={8}>
+                                    <Col span={16} offset={6}>
+                                        <Input
+
+                                            placeholder="Search..."
+                                            value={this.state.keyWord}
+                                            allowClear={true}
+                                            onChange={this.handleChangeInput.bind(this)}
+                                        />
+                                    </Col>
+
+                                </Col>
+                                <Col span={7}>
+
+                                    <RangePicker
+                                        value={this.state.rangePicker}
+                                        onChange={this.handleChangePicker.bind(this)} />
+                                </Col>
+                                <Col span={2}>
+                                    <Button style={{ borderColor: '#0050b3', color: '#0050b3' }} icon={<SearchOutlined />}
+                                        onClick={this.handleSearch.bind(this)}
+                                    >
+                                        Tìm kiếm
+                                    </Button>
+
+                                </Col>
+                                <Col span={7}>
+
+                                    <Button onClick={this.handleReset.bind(this)} icon={<SyncOutlined />}>Xóa</Button>
+
+                                </Col>
+
+                            </Row>
+                            <br />
+                            <Row>
+                                <Col span={24}>
+                                    <Table style={{ margin: '10px' }} columns={columns} dataSource={orderNotConfirm}
+                                        scroll={true}
+                                        rowClassName={(record, index) => (record.enableOrder ? "green" : "red")}
+                                        pagination={{
+                                            position: ["bottomCenter", "bottomCenter"],
+                                            defaultPageSize: this.state.pageSize,
+                                            defaultCurrent: this.state.pageDefault
+                                        }}>
+
+                                    </Table>
+                                </Col>
+                            </Row>
+                            {/*Modal Detail */}
+                            {
+                                visible ?
+                                    <ModalViewOrderDetail
+                                        visible={visible}
+                                        onCancel={this.handleCancel.bind(this)}
+                                        data={orderDetailList}
+                                        feeShip={feeShip}
+                                        customer={customerItem}
+                                        note={note}
+                                        status={0}
+                                    >
+                                    </ModalViewOrderDetail> : null
+                            }
+                            {/*Modal Cancel */}
+                            {
+                                visibleCancel ?
+                                    <ModalCancelOrder
+                                        visible={visibleCancel}
+                                        onOk={this.handleCancelOrder.bind(this)}
+                                        onCancel={this.handleCancelModal.bind(this)}
+                                        orderId={orderId}
+                                    >
+                                    </ModalCancelOrder> : null
+                            }
                         </Spin>
                     </div>
                 </div>

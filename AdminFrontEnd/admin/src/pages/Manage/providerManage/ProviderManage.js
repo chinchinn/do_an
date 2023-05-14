@@ -6,11 +6,13 @@ import BreadScrumb from '../../../components/breadScrumb/BreadScrumb';
 //
 import { Table, Button, Tag, Input, Row, Col, Spin, message, Popconfirm } from 'antd';
 import axiosInstance from '../../../utils/axiosInstance';
-import { EditOutlined, DeleteOutlined, ImportOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, ImportOutlined, RotateLeftOutlined } from '@ant-design/icons';
 import ModalProvider from '../../../components/provider/modalProvider/ModalProvider';
 
 const { Search } = Input;
 const warn = "Bạn có chắc chắn muốn xóa nhà cung ứng này?";
+
+const updateStatus = "Bạn có chắc chắn muốn hiển thị nhà cung ứng này?"
 
 export default class ProviderManage extends Component {
     constructor(props) {
@@ -39,7 +41,7 @@ export default class ProviderManage extends Component {
 
     //xử khi gọi add, update , enable modal
     handleClickBtn(record = null) {
-      
+
         this.setState({
             visible: true,
             item: { ...record }
@@ -67,7 +69,7 @@ export default class ProviderManage extends Component {
             this.setState({ isLoading: true });
             axiosInstance('ManageProvider', 'PUT', value)
                 .then(res => {
-                  
+
                     if (res?.code === 99) {
                         message.error(res.message, 2)
                         this.setState(prevState => {
@@ -127,21 +129,51 @@ export default class ProviderManage extends Component {
     //api xóa
     confirmDelete(record) {
         const { data } = this.state;
-        let tempdata = [...data].filter(ele => ele.id !== record.id);
+        let tempdata = [...data];
         this.setState({ isLoading: true });
 
-        axiosInstance(`ManageProvider/${record.id}`, 'DELETE')
-            .then(res => {
-                message.success(`${res.data.message}`, 2)
-                this.setState({
-                    data: [...tempdata],
-                    isLoading: false,
+
+        if (record.status === 0) {
+            axiosInstance(`ManageProvider/${record.id}`, 'DELETE')
+                .then(res => {
+                    message.success(`${res.data.message}`, 2)
+                    this.setState({
+                        data: [...tempdata].map(x => {
+
+                            if (x.id === record.id) {
+                                return { ...x, status: 1 }
+                            }
+                            else { return x }
+                        }),
+                        isLoading: false,
+                    })
                 })
-            })
-            .catch(err => {
-                message.warning("Xóa nhà cung cấp thất bại!", 2)
-                this.setState({ isLoading: false });
-            })
+                .catch(err => {
+                    message.warning("Xóa nhà cung cấp thất bại!", 2)
+                    this.setState({ isLoading: false });
+                })
+        }
+        else {
+            axiosInstance(`ManageProvider/ChangeStatus/${record.id}`, 'POST')
+                .then(res => {
+                    message.success(`Cập nhật thành công`, 2)
+                    this.setState({
+                        data: [...tempdata].map(x => {
+
+                            if (x.id === record.id) {
+                                return { ...x, status: 0 }
+                            }
+                            else { return x }
+                        }),
+                        isLoading: false,
+                    })
+                })
+                .catch(err => {
+                    message.warning("Cập nhật nhà cung cấp thất bại!", 2)
+                    this.setState({ isLoading: false });
+                })
+        }
+
     }
 
     //api tìm kiếm
@@ -217,26 +249,25 @@ export default class ProviderManage extends Component {
                 title: 'Trạng thái',
                 dataIndex: 'status',
                 key: 'status',
-                render: status => (<span>{
-                    <Tag color="green">Hiển thị</Tag>
-                }</span>)
-
+                render: text => <span><Button style={text === 0 ? { background: '#4abd2b ', color: '#ffffff' } : { background: '#c10417', color: '#ffffff' }}>{text === 1 ? "Không hoạt động" : "Hoạt động"}</Button></span>
             },
 
             {
                 title: (<Button icon={<ImportOutlined />} onClick={() => this.handleClickBtn()}
-                    style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }}>Add provider</Button>),
+                    style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }}>Thêm nhà cung cấp</Button>),
                 width: '30%',
                 key: 'action',
                 render: (text, record, index) => (
                     <span>
-                        <Button type="primary" icon={<EditOutlined />} style={{ marginRight: 10, marginLeft: 10 }}
-                            onClick={() => this.handleClickBtn(record)}>Update</Button>
-                        <>
-                            <Popconfirm placement="left" title={warn} onConfirm={() => this.confirmDelete(record)} okText="Yes" cancelText="No">
-                                <Button icon={<DeleteOutlined />} type="danger">Delete</Button>
-                            </Popconfirm>
-                        </>
+                        <Button type="primary" icon={<EditOutlined />} style={{ marginRight: 10, marginLeft: 10 }} disabled={record.status === 0 ? false : true}
+                            onClick={() => this.handleClickBtn(record)}>Cập nhật</Button>
+                        <Popconfirm placement="left" title={record.status === 0 ? warn : updateStatus} onConfirm={() => this.confirmDelete(record)} okText="Yes" cancelText="No">
+                            {record.status === 0 ? <Button icon={<DeleteOutlined />} type="danger">Xóa</Button>
+                                : <Button icon={<RotateLeftOutlined />}
+                                    style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }}
+                                >Hiển thị</Button>}
+
+                        </Popconfirm>
                     </span>
 
                 ),
