@@ -21,8 +21,11 @@ function UserManagerV2() {
         userList: [],
         isLoading: false,
         keyWord: null,
-        status: null,
+        status: null
+
     });
+
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
     const isMounted = useRef(false);
 
@@ -180,6 +183,26 @@ function UserManagerV2() {
 
         return () => isMounted.current = false;
     }, [])
+
+
+    const rowSelection = {
+        type: 'checkbox',
+        onSelectAll(selected, selectedRows, changeRows) {
+            // Handle select all checkbox change here
+            if (selected) {
+                debugger;
+                setSelectedRowKeys(userManager.userList.map((row) => row.key));
+            } else {
+                setSelectedRowKeys([]);
+            }
+        },
+        onChange(selectedRowKeys, selectedRows) {
+            debugger;
+            // Handle individual checkbox change here
+            setSelectedRowKeys(selectedRowKeys);
+        },
+        selectedRowKeys,
+    };
 
 
     const onFinish = (values) => {
@@ -428,7 +451,7 @@ function UserManagerV2() {
                                 >
                                     Tìm kiếm
                                 </Button>
-                                <Button onClick={handleReset} style={{ marginRight: '10px' }} icon={<SyncOutlined />}>Cập nhật lại mật khẩu</Button>
+                                <Button onClick={handleReset} style={{ marginRight: '10px' }} icon={<SyncOutlined />}>Cập nhật tìm kiếm</Button>
 
                                 <Button onClick={() => setShowModelAdd(true)} style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }} icon={<ImportOutlined />}>Thêm tài khoản</Button>
                             </Col>
@@ -445,6 +468,8 @@ function UserManagerV2() {
                                         defaultPageSize: 4,
                                         defaultCurrent: 1
                                     }}
+                                // rowSelection={rowSelection}
+
                                 >
 
                                 </Table>
