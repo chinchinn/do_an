@@ -22,6 +22,7 @@ import { ThemeProvider } from "@livechat/ui-kit";
 import "moment-timezone";
 import Chatv1 from "./components/chat/chat";
 import { useState } from "react";
+import ConfirmAccount from "./components/AuthModal/ConfirmAccount/ConfirmAccount";
 
 const style = {
   height: 40,
@@ -53,7 +54,7 @@ function App() {
     <>
       <div
         style={
-          window.location.pathname.includes("ResetPassword")
+          window.location.pathname.includes("ResetPassword") || window.location.pathname.includes("ConfirmAccount")
             ? displayNone
             : null
         }
@@ -83,6 +84,7 @@ function App() {
         </BackTop>
       </div>
       <Route exact path="/ResetPassword/" component={ResetPassword} />
+      <Route exact path="/ConfirmAccount/" component={ConfirmAccount} />
     </>
   );
 }

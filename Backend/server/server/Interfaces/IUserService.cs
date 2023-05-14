@@ -19,5 +19,6 @@ namespace server.Interfaces
         Task<bool> ResetPassword(ResetPasswordRequest request);
         Task<string> LoginWithFacebook(FacebookLoginRequest request);
         Task<List<AppRole>> GetRoles();
+        Task <bool> ConfirmAccount(ConfirmAccount request);
     }
 }

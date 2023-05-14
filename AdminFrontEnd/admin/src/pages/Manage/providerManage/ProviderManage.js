@@ -67,7 +67,7 @@ export default class ProviderManage extends Component {
             this.setState({ isLoading: true });
             axiosInstance('ManageProvider', 'PUT', value)
                 .then(res => {
-                    debugger;
+                  
                     if (res?.code === 99) {
                         message.error(res.message, 2)
                         this.setState(prevState => {

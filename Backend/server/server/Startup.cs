@@ -61,6 +61,7 @@ namespace server
             })
                 .AddEntityFrameworkStores<ShopDbContext>()
                 .AddDefaultTokenProviders();
+                
             //
             services.AddSignalR();
             

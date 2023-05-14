@@ -60,6 +60,11 @@ namespace server.Controllers
         {
             
             var result = await _manageOrderService.confirmShippingAndSendMailBillOrder(request);
+
+            if(result == null)
+            {
+                return BadRequest();
+            }
             if (result.success)
             {
                 var listData = await _manageOrderService.GetOrderDetailByOrderId(request.orderId);
@@ -70,13 +75,22 @@ namespace server.Controllers
                 //    await _manageOrderService.SetStatusNotConfirm(request.orderId, 0);
                 //}
                 //return Ok(flag);
+
             }
             return Ok(result.success);
+
+
         }
         [HttpPost("CancelOrder")]
         public async Task<IActionResult> CancelOrder(CancelOrderRequest request)
         {
             var result = await _manageOrderService.CancelOrder(request);
+
+            if (!result)
+            {
+
+                return BadRequest();
+            }
             if (result)
             {
                 var order = await _manageOrderService.GetOrderByOrderId(request.orderId);
@@ -122,6 +136,10 @@ namespace server.Controllers
         public async Task<IActionResult> UserCancelOrder(int id)
         {
             var data = await _manageOrderService.UserCancelOrder(id);
+            if (!data)
+            {
+                return BadRequest();
+            }
             return Ok(data);
         }
     }

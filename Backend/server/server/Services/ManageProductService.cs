@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Ocsp;
 using server.Data;
 using server.enums;
 using server.Exceptions;
@@ -59,7 +60,8 @@ namespace server.Services
                     price = request.price,
                     Images = tempImages,
                     categoryId = request.categoryId,
-                    providerId = request.providerId
+                    providerId = request.providerId,
+                    createdDate = DateTime.Now,
                 };
 
                 _context.products.Add(product);
@@ -185,7 +187,7 @@ namespace server.Services
 
         public async Task<List<ProductViewModel>> GetAll()
         {
-            var data = _context.products.Include(img => img.Images).Where(x => x.status == ActionStatus.Display)
+            var data = _context.products.Include(img => img.Images)
                 .Select(rs => new ProductViewModel
                 {
                     id = rs.id,
@@ -346,6 +348,20 @@ namespace server.Services
             _context.Entry(product).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return product.id;
+        }
+
+        public async Task<bool> ChangeStatus(int productId)
+        {
+            var product = await _context.products.Where(x => x.id == productId).FirstOrDefaultAsync();
+            if (product != null)
+            {
+                product.status = ActionStatus.Display;
+                _context.Entry(product).State = EntityState.Modified;
+                return await _context.SaveChangesAsync() > 0;
+            }
+            else { return false; }
+         
+         
         }
     }
 }

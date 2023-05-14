@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Ocsp;
 using server.Data;
 using server.enums;
 using server.Exceptions;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace server.Services
@@ -198,18 +200,47 @@ namespace server.Services
         //Hàm chuyển trạng thái và lấy thông tin
         private async Task<ResultOrderViewModel> MoveOrderStatus(StatusOrderRequest request)
         {
-            var order = await _context.orders.Where(x => x.id == request.orderId).Include(u => u.user).FirstOrDefaultAsync();
-            if (order == null)
+            using (var trans = await _context.Database.BeginTransactionAsync())
             {
-                return new ResultOrderViewModel { total = 0, customer = string.Empty, email = string.Empty, success = false }; ;
+                try
+                {
+                    var order = await _context.orders.Where(x => x.id == request.orderId).Include(u => u.user).FirstOrDefaultAsync();
+
+                    if (order == null)
+                    {
+                        return new ResultOrderViewModel { total = 0, customer = string.Empty, email = string.Empty, success = false }; ;
+                    }
+                    var total = order.total;
+                    var customer = string.IsNullOrEmpty(order.guess) ? order.user.displayname : order.guess;
+                    order.status = request.status;
+                    order.note = "Admin cancelled";
+                    _context.Entry(order).State = EntityState.Modified;
+                    var rs = await _context.SaveChangesAsync() > 0;
+
+                    var orderDetail = await _context.orderDetails.Where(x => x.id == request.orderId).ToListAsync();
+
+                    foreach (var item in orderDetail)
+                    {
+                        var product = await _context.products.FirstAsync(x => x.id == item.productId);
+                        product.amount = product.amount + item.quantity;
+                        _context.Entry(product).State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+                    }
+                    await trans.CommitAsync();
+
+
+                    return new ResultOrderViewModel { total = total, customer = customer, email = order.email, success = rs };
+                }
+                catch (Exception ex)
+                {
+                    await trans.RollbackAsync();
+                    return null;
+                }
+               
+                
             }
-            var total = order.total;
-            var customer = string.IsNullOrEmpty(order.guess) ? order.user.displayname : order.guess;
-            order.status = request.status;
-            order.note = "Admin cancelled";
-            _context.Entry(order).State = EntityState.Modified;
-            var rs = await _context.SaveChangesAsync() > 0;
-            return new ResultOrderViewModel { total = total, customer = customer, email= order.email, success = rs };
+               
+
         }
 
         public async Task<bool> CancelOrder(CancelOrderRequest request)
@@ -274,17 +305,17 @@ namespace server.Services
                     {
                         return false;
                     }
-                    var orderDetailList = await _context.orderDetails.Where(x => x.orderId == request.orderId).ToListAsync();
-                    //var productList = await _context.products.ToListAsync();
-                    foreach(var item in orderDetailList)
-                    {
-                        var product = await _context.products.FirstAsync(x => x.id == item.productId);
-                        product.amount = product.amount - item.quantity;
-                        _context.Entry(product).State = EntityState.Modified;
-                        await _context.SaveChangesAsync();
-                    }
-                    
-                    await trans.CommitAsync();
+                    //var orderDetailList = await _context.orderDetails.Where(x => x.orderId == request.orderId).ToListAsync();
+                    ////var productList = await _context.products.ToListAsync();
+                    //foreach (var item in orderDetailList)
+                    //{
+                    //    var product = await _context.products.FirstAsync(x => x.id == item.productId);
+                    //    product.amount = product.amount - item.quantity;
+                    //    _context.Entry(product).State = EntityState.Modified;
+                    //    await _context.SaveChangesAsync();
+                    //}
+
+                    //await trans.CommitAsync();
                     check = true;
                 }
                 catch (Exception ex)
@@ -391,48 +422,63 @@ namespace server.Services
             {
                 try
                 {
-                    var orderDetail = new OrderDetail()
+                    var checkProduct = await _context.products.AnyAsync(x => x.amount >= request.quantity);
+                    if(checkProduct)
                     {
-                        id = request.id,
-                        orderId = request.orderId,
-                        productId = request.productId,
-                        quantity = request.quantity,
-                        sale = request.sale,
-                        status = request.status,
-                        unitPrice = request.unitPrice,
-                    };
-                    _context.Entry(orderDetail).State = EntityState.Modified;
-                    var check = await _context.SaveChangesAsync() > 0;
-                    if (check)
-                    {
-                        var order = await _context.orders.Where(x => x.id == request.orderId).FirstOrDefaultAsync();
-                        var orderDetailOfOrder = await _context.orderDetails
-                            .Where(y => y.orderId == request.orderId && y.status == ActionStatus.Display).ToListAsync();
-                        total = order.feeShip;
-                        foreach (var item in orderDetailOfOrder)
+                        var orderDetail = new OrderDetail()
                         {
-                            total += item.quantity * item.unitPrice * (100 - item.sale) / 100;
-                        }
-                        order.total = total;
-                        _context.Entry(order).State = EntityState.Modified;
-                        var check2 = await _context.SaveChangesAsync() > 0;
-                        if (check2)
+                            id = request.id,
+                            orderId = request.orderId,
+                            productId = request.productId,
+                            quantity = request.quantity,
+                            sale = request.sale,
+                            status = request.status,
+                            unitPrice = request.unitPrice,
+                        };
+                        _context.Entry(orderDetail).State = EntityState.Modified;
+                        var check = await _context.SaveChangesAsync() > 0;
+                        if (check)
                         {
-                            orderDetailId = orderDetail.id;
-                            isSuccess = true;
+
+                            var order = await _context.orders.Where(x => x.id == request.orderId).FirstOrDefaultAsync();
+                            var orderDetailOfOrder = await _context.orderDetails
+                                .Where(y => y.orderId == request.orderId && y.status == ActionStatus.Display).ToListAsync();
+                            total = order.feeShip;
+                            foreach (var item in orderDetailOfOrder)
+                            {
+                                total += item.quantity * item.unitPrice * (100 - item.sale) / 100;
+                            }
+                            order.total = total;
+                            _context.Entry(order).State = EntityState.Modified;
+                            var check2 = await _context.SaveChangesAsync() > 0;
+                            if (check2)
+                            {
+                                orderDetailId = orderDetail.id;
+                                isSuccess = true;
+                            }
+                            else
+                            {
+                                orderDetailId = 0;
+                                isSuccess = false;
+                            }
+
+                            var product = await _context.products.FirstAsync(x => x.id == request.productId);
+                            product.amount = product.amount - request.quantity;
+                            _context.Entry(product).State = EntityState.Modified;
+                            await _context.SaveChangesAsync();
                         }
                         else
                         {
                             orderDetailId = 0;
                             isSuccess = false;
                         }
+                        transaction.Commit();
                     }
                     else
                     {
-                        orderDetailId = 0;
-                        isSuccess = false;
+                        return null;
                     }
-                    transaction.Commit();
+                  
                 }
                 catch (Exception ex)
                 {
@@ -507,17 +553,43 @@ namespace server.Services
 
         public async Task<bool> UserCancelOrder(int orderId)
         {
-            var order = await _context.orders.Where(x => x.id == orderId).Include(u => u.user).FirstOrDefaultAsync();
-            if (order == null)
+           
+            using (var trans = await _context.Database.BeginTransactionAsync())
             {
-                return false;
+                try
+                {
+                    var order = await _context.orders.Where(x => x.id == orderId).Include(u => u.user).FirstOrDefaultAsync();
+                    if (order == null)
+                    {
+                        return false;
+                    }
+
+                    order.status = OrderStatus.Cancel;
+                    order.note = "User cancelled";
+                    _context.Entry(order).State = EntityState.Modified;
+
+                    var orderDetail = await _context.orderDetails.Where(x => x.id == orderId).ToListAsync();
+
+                    foreach (var item in orderDetail)
+                    {
+                        var product = await _context.products.FirstAsync(x => x.id == item.productId);
+                        product.amount = product.amount + item.quantity;
+                        _context.Entry(product).State = EntityState.Modified;
+                      
+                    }
+                    await trans.CommitAsync();
+
+                    return await _context.SaveChangesAsync() > 0;
+
+                    
+                }
+                catch (Exception ex)
+                {
+                    await trans.RollbackAsync();
+                    return false;
+                }
+
             }
-            
-            order.status = OrderStatus.Cancel;
-            order.note = "User cancelled";
-            _context.Entry(order).State = EntityState.Modified;
-            return await _context.SaveChangesAsync() > 0;
-            
         }
     }
 }

@@ -115,7 +115,7 @@ function UserManagerV2() {
     }
 
     async function addUser() {
-        debugger;
+
         var validate = Object.values(form.getFieldsValue()).every(x => x != undefined);
         if (validate) {
             setUserManager({ ...userManager, isLoading: true })
@@ -129,7 +129,7 @@ function UserManagerV2() {
             if (check) {
                 await callApi();
                 setShowModelAdd(false);
-                message.success("Tạo user thành công.")
+                message.success("Tạo user thành công và vui lòng kiểm tra email xác thực tài khoản.")
             }
             else {
                 message.error("Tạo user thất bại.")
@@ -189,7 +189,7 @@ function UserManagerV2() {
         console.log('Failed:', errorInfo);
     };
     const onChange = (value) => {
-        debugger;
+
         setRoleSelected(value);
         console.log(`selected ${value}`);
     };
@@ -337,8 +337,10 @@ function UserManagerV2() {
             key: 'roleName',
             dataIndex: 'roleName',
 
-            render: text => { return  text === "User" ? <span style={{ color: '#52c41a' }}>{text}</span> :
-                <span style={{ color: '#1890ff' }}>{text}</span>}
+            render: text => {
+                return text === "User" ? <span style={{ color: '#52c41a' }}>{text}</span> :
+                    <span style={{ color: '#1890ff' }}>{text}</span>
+            }
         },
         {
             title: 'SĐT',

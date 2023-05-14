@@ -18,6 +18,7 @@ namespace server.Models
         public Product product { get; set; }
         //foreign key
         public int orderId { get; set; }
+        public DateTime createDate { get; set; } = DateTime.Now;
         public Order order { get; set; }
     }
 }
