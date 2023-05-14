@@ -33,7 +33,6 @@ class ListProducts extends Component {
     render() {
         const { products, loading, isViewMore, pageCurrent, pageSize, totalPage
         } = this.props;
-
         return (<>
             <h4 style={{ maxWidth: '75%', margin: '20px auto' }}>{this.props.title}</h4>
 
@@ -41,7 +40,7 @@ class ListProducts extends Component {
                 {
                     <Skeleton style={{ width: '100%', border: '1px solid red' }} loading={loading} active>{
                         products.map((ele) => {
-                            return <Product key={ele.id} addToCart={this.handleAddToCart.bind(this)} product={{ ...ele }}></Product>
+                            return <Product key={ele.id}  addToCart={this.handleAddToCart.bind(this)} product={{ ...ele }}></Product>
                         })}
                     </Skeleton>
                 }

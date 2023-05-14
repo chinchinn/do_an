@@ -72,22 +72,19 @@ export default class Order extends Component {
                 render: total => <strong style={{ color: '#87d068' }}>{(total).toLocaleString('vi-VN')} đ</strong>
             },
             {
-                title: 'Chi tiết',
+                title: 'Action',
                 render: (text, record, index) => (
                     <span>
 
-                        <Button type="primary" icon={<EditOutlined />}
-                            onClick={() => this.handleViewDetail(record)}>Chi tiết</Button>
-
+                        <Button style={{marginBottom:4}} type="primary" icon={<EditOutlined />}
+                            onClick={() => this.handleViewDetail(record)}>Action</Button>
+                        <Button disabled={record.status === 3 ? 'disabled' : null}
+                            icon={<StopOutlined />} onClick={() => this.CancelOrder(record)} danger>Cancel</Button>
                     </span>
                 ),
             },
 
 
-            {
-                render: (record) => <Button disabled={record.status === 3 ? 'disabled' : null}
-                    icon={<StopOutlined />} onClick={() => this.CancelOrder(record)} danger>Cancel</Button>
-            }
 
         ];
         return (

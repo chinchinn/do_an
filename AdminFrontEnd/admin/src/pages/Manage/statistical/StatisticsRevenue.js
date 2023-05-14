@@ -21,7 +21,7 @@ export default class StatisticsRevenue extends Component {
       //
       option: 1,
       month: 7,
-      year: 2020,
+      year: 2023,
       labels: [],
       countOrders: [],
       sumRevenues: [],

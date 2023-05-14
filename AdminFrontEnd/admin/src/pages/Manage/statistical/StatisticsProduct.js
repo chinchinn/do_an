@@ -36,6 +36,7 @@ export default class StatisticsProduct extends Component {
           amountCount: countAmount,
           status: status,
           isChart: 0,
+          goback:false
         })
     }
     callApiOrder = async() => {
@@ -61,7 +62,8 @@ export default class StatisticsProduct extends Component {
     //
     async handleClickOrder(){
         this.setState({
-            isChart: 1
+            isChart: this.state.goback ? 1 : 0,
+            goback : !this.state.goback
         })
         await this.callApiOrder();
     }
