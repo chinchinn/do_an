@@ -5,7 +5,7 @@ import '../../../components/common/styleCommon/Content.css';
 import axiosInstance from '../../../utils/axiosInstance';
 import BreadScrumb from '../../../components/breadScrumb/BreadScrumb';
 import { Table, Tag, Button, Spin, message, Popconfirm, Input, Row, Col, Select } from 'antd';
-import { EditOutlined, DeleteOutlined, EyeOutlined, ImportOutlined, SaveOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, EyeOutlined, ImportOutlined, SaveOutlined, RotateLeftOutlined } from '@ant-design/icons';
 import ModalProduct from '../../../components/product/modalProduct/ModalProduct';
 import ModalProductV2 from '../../../components/product/modalProduct/ModalProductV2';
 
@@ -13,6 +13,8 @@ import ModalProductV2 from '../../../components/product/modalProduct/ModalProduc
 const { Search } = Input;
 const { Option } = Select;
 const warn = "Bạn có chắc chắn muốn xóa sản phẩm này?";
+
+const updateStatus = "Bạn có chắc muốn hiển thị sản phẩm này?";
 
 export default class ProductManage extends Component {
   constructor(props) {
@@ -31,7 +33,7 @@ export default class ProductManage extends Component {
     }
   }
   handleClickBtn(record = null) {
-    debugger;
+
     this.setState({
       visible: true,
       item: { ...record }
@@ -120,7 +122,7 @@ export default class ProductManage extends Component {
       })
       axiosInstance('ManageProduct', 'POST', productCreate)
         .then(res => {
-          debugger;
+
           this.setState({
             data: [...this.state.data, res.data],
             isLoading: false,
@@ -179,21 +181,52 @@ export default class ProductManage extends Component {
   }
   confirmDelete(record) {
     const { data } = this.state;
-    let tempData = [...data].filter(ele => ele.id !== record.id);
+    let tempData = [...data];
     this.setState({ isLoading: true });
 
-    axiosInstance(`ManageProduct/${record.id}`, 'DELETE')
-      .then(res => {
-        message.success(`${res.data.message}`, 2)
-        this.setState({
-          data: [...tempData],
-          isLoading: false,
+    if (record.status === 0) {
+      axiosInstance(`ManageProduct/${record.id}`, 'DELETE')
+        .then(res => {
+          message.success(`${res.data.message}`, 2)
+          this.setState({
+            data: [...tempData].map(x => {
+
+              if (x.id === record.id) {
+                return { ...x, status: 1 }
+              }
+              else { return x }
+            }),
+            isLoading: false,
+          })
         })
-      })
-      .catch(err => {
-        message.warning(`${err.toString()}`, 2)
-        this.setState({ isLoading: false });
-      })
+        .catch(err => {
+          message.warning(`${err.toString()}`, 2)
+          this.setState({ isLoading: false });
+        })
+    }
+    else {
+
+      axiosInstance(`ManageProduct/ChangeStatus/${record.id}`, 'POST')
+        .then(res => {
+          message.success(`Cập nhật thành công`, 2)
+          this.setState({
+            data: [...tempData].map(x => {
+
+              if (x.id === record.id) {
+                return { ...x, status: 0 }
+              }
+              else { return x }
+            }),
+            isLoading: false,
+          })
+        })
+        .catch(err => {
+          message.warning(`Cập nhật thất bại`, 2)
+          this.setState({ isLoading: false });
+        })
+
+    }
+
   }
   handleChangeSelectCategory(e) {
     this.setState({
@@ -328,18 +361,28 @@ export default class ProductManage extends Component {
         render: prov => <span style={{}}>{prov.name}</span>
       },
       {
-        title: (<Button icon={<ImportOutlined />} onClick={() => this.handleClickBtn()} style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }}>Add product</Button>),
-        key: 'action',
+        title: 'Trạng thái',
+        dataIndex: 'status',
+        key: 'status',
+        render: text => <span><Button style={text === 0 ? { background: '#4abd2b ', color: '#ffffff' } : { background: '#c10417', color: '#ffffff' }}>{text === 1 ? "Không hoạt động" : "Hoạt động"}</Button></span>
+      },
+      {
+        title: (<Button icon={<ImportOutlined />} onClick={() => this.handleClickBtn()} style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }}>Thêm sản phẩm</Button>),
+        key: 'Thao tác',
         width: '25%',
         render: (text, record, index) => (
           <span>
 
-            <Button type="primary" icon={<EditOutlined />} style={{ marginRight: 10, marginLeft: 10 }}
-              onClick={() => this.handleClickBtn(record)}>Update</Button>
-            <Popconfirm placement="left" title={warn} onConfirm={() => this.confirmDelete(record)} okText="Yes" cancelText="No">
-              <Button icon={<DeleteOutlined />} type="danger">Delete</Button>
+            <Button type="primary" icon={<EditOutlined />} style={{ marginRight: 10, marginLeft: 10 }} disabled={record.status === 0 ? false : true}
+              onClick={() => this.handleClickBtn(record)}>Cập nhật</Button>
+            <Popconfirm placement="left" title={record.status === 0 ? warn : updateStatus} onConfirm={() => this.confirmDelete(record)} okText="Yes" cancelText="No">
+              {record.status === 0 ? <Button icon={<DeleteOutlined />} type="danger">Xóa</Button>
+                : <Button icon={<RotateLeftOutlined />}
+                  style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }}
+                >Hiển thị</Button>}
+
             </Popconfirm>
-          </span>
+          </span >
         ),
       },
     ];

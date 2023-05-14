@@ -15,7 +15,6 @@ const config = {
     wrapperCol: {
         span: 16,
     },
-
 }
 
 function ModalProductV2(props) {
@@ -83,8 +82,6 @@ function ModalProductV2(props) {
             upload
         )
     }
-
-
 
     function handleSubmitForm(values) {
 

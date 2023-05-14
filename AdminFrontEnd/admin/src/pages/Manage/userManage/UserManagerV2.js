@@ -21,8 +21,11 @@ function UserManagerV2() {
         userList: [],
         isLoading: false,
         keyWord: null,
-        status: null,
+        status: null
+
     });
+
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
     const isMounted = useRef(false);
 
@@ -115,7 +118,7 @@ function UserManagerV2() {
     }
 
     async function addUser() {
-        debugger;
+
         var validate = Object.values(form.getFieldsValue()).every(x => x != undefined);
         if (validate) {
             setUserManager({ ...userManager, isLoading: true })
@@ -129,7 +132,7 @@ function UserManagerV2() {
             if (check) {
                 await callApi();
                 setShowModelAdd(false);
-                message.success("Tạo user thành công.")
+                message.success("Tạo user thành công và vui lòng kiểm tra email xác thực tài khoản.")
             }
             else {
                 message.error("Tạo user thất bại.")
@@ -182,6 +185,26 @@ function UserManagerV2() {
     }, [])
 
 
+    const rowSelection = {
+        type: 'checkbox',
+        onSelectAll(selected, selectedRows, changeRows) {
+            // Handle select all checkbox change here
+            if (selected) {
+                debugger;
+                setSelectedRowKeys(userManager.userList.map((row) => row.key));
+            } else {
+                setSelectedRowKeys([]);
+            }
+        },
+        onChange(selectedRowKeys, selectedRows) {
+            debugger;
+            // Handle individual checkbox change here
+            setSelectedRowKeys(selectedRowKeys);
+        },
+        selectedRowKeys,
+    };
+
+
     const onFinish = (values) => {
         console.log('Success:', values);
     };
@@ -189,7 +212,7 @@ function UserManagerV2() {
         console.log('Failed:', errorInfo);
     };
     const onChange = (value) => {
-        debugger;
+
         setRoleSelected(value);
         console.log(`selected ${value}`);
     };
@@ -201,7 +224,7 @@ function UserManagerV2() {
     const popupModelAdd = () => {
 
         return (<Modal
-            title="AddUser"
+            title="Thêm tài khoản"
             visible={showModelAdd}
             onOk={addUser}
             confirmLoading={userManager.isLoading}
@@ -337,8 +360,10 @@ function UserManagerV2() {
             key: 'roleName',
             dataIndex: 'roleName',
 
-            render: text => { return  text === "User" ? <span style={{ color: '#52c41a' }}>{text}</span> :
-                <span style={{ color: '#1890ff' }}>{text}</span>}
+            render: text => {
+                return text === "User" ? <span style={{ color: '#52c41a' }}>{text}</span> :
+                    <span style={{ color: '#1890ff' }}>{text}</span>
+            }
         },
         {
             title: 'SĐT',
@@ -415,8 +440,8 @@ function UserManagerV2() {
                                 <Select placeholder="Status" style={{ width: 250 }}
                                     onChange={(e) => handleChangeStatus(e)}
                                 >
-                                    <Select.Option value={0}>Active</Select.Option>
-                                    <Select.Option value={1}>InActive</Select.Option>
+                                    <Select.Option value={0}>Hoạt động</Select.Option>
+                                    <Select.Option value={1}>Không hoạt động</Select.Option>
                                 </Select>
                             </Col>
                             <Col span={8}>
@@ -424,11 +449,11 @@ function UserManagerV2() {
                                     icon={<SearchOutlined />}
                                     onClick={handleSearch}
                                 >
-                                    Search
+                                    Tìm kiếm
                                 </Button>
-                                <Button onClick={handleReset} style={{ marginRight: '10px' }} icon={<SyncOutlined />}>Reset</Button>
+                                <Button onClick={handleReset} style={{ marginRight: '10px' }} icon={<SyncOutlined />}>Cập nhật tìm kiếm</Button>
 
-                                <Button onClick={() => setShowModelAdd(true)} style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }} icon={<ImportOutlined />}>Add User</Button>
+                                <Button onClick={() => setShowModelAdd(true)} style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }} icon={<ImportOutlined />}>Thêm tài khoản</Button>
                             </Col>
 
                         </Row>
@@ -443,6 +468,8 @@ function UserManagerV2() {
                                         defaultPageSize: 4,
                                         defaultCurrent: 1
                                     }}
+                                // rowSelection={rowSelection}
+
                                 >
 
                                 </Table>

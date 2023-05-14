@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using server.Data;
 
 namespace server.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    partial class ShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230514121118_update-order-detail")]
+    partial class updateorderdetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -164,7 +166,7 @@ namespace server.Migrations
                         new
                         {
                             Id = new Guid("078269d8-1a12-4592-b92e-7ff1a876a5f2"),
-                            ConcurrencyStamp = "51cf3528-cb13-4738-a6ed-3b14e087a7ec",
+                            ConcurrencyStamp = "d55d648e-fb8d-4df9-8153-02347bd37fff",
                             CreationDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Administrator role",
                             Name = "Admin",
@@ -173,7 +175,7 @@ namespace server.Migrations
                         new
                         {
                             Id = new Guid("6d9186ba-2cd6-4b6c-b729-4e605de1019f"),
-                            ConcurrencyStamp = "942e1074-b38d-4f44-85d1-01960b21e03f",
+                            ConcurrencyStamp = "c02a80d4-8ba0-4b53-b2a8-75e41f8931c0",
                             CreationDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "User role",
                             Name = "User",
@@ -273,13 +275,13 @@ namespace server.Migrations
                         {
                             Id = new Guid("4557893f-1f56-4b6f-bb3b-caefd62c8c49"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "46fb7be6-3287-4f2e-b1cf-a845cd620495",
+                            ConcurrencyStamp = "ba96318b-6f55-48d1-8a6e-152ed1241f28",
                             Email = "luuvututrinh58@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "some-admin-email@nonce.fake",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEEfbP4/Me1r33NavPanZIDBLV5lO7Ktk4sPpU2uN0UM8r7IC7qpV8W3hI4Xa4OS0Wg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEPHHYoVk67qJK2XlL89dqBblV/9diAy3udgMksq2ZCEC5HvNykHlSJGzSUYv3wWEEA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -540,9 +542,6 @@ namespace server.Migrations
                     b.Property<string>("code")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("createdDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("description")
                         .HasColumnType("nvarchar(max)");
 
@@ -585,7 +584,6 @@ namespace server.Migrations
                             amount = 0,
                             capacity = 0,
                             categoryId = 1,
-                            createdDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             description = "mô tả sản phẩm 1",
                             importPrice = 100000,
                             name = "Áo sơ mi",
@@ -602,7 +600,6 @@ namespace server.Migrations
                             amount = 0,
                             capacity = 0,
                             categoryId = 1,
-                            createdDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             description = "mô tả sản phẩm 2",
                             importPrice = 80000,
                             name = "Áo sơ mi tay ngắn",
@@ -619,7 +616,6 @@ namespace server.Migrations
                             amount = 0,
                             capacity = 0,
                             categoryId = 2,
-                            createdDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             description = "mô tả sản phẩm 3",
                             importPrice = 200000,
                             name = "Quần tây",
@@ -636,7 +632,6 @@ namespace server.Migrations
                             amount = 0,
                             capacity = 0,
                             categoryId = 3,
-                            createdDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             description = "mô tả sản phẩm 4",
                             importPrice = 50000,
                             name = "Áo thun",
@@ -653,7 +648,6 @@ namespace server.Migrations
                             amount = 0,
                             capacity = 0,
                             categoryId = 4,
-                            createdDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             description = "mô tả sản phẩm 5",
                             importPrice = 180000,
                             name = "Quần kaki",

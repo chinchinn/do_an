@@ -13,7 +13,7 @@ const config = {
 export default class ModalProvider extends Component {
     handleSubmit(e) {
 
-        debugger;
+      
         const { data } = this.props;
         this.props.onSubmitForm({
             id: data.id,

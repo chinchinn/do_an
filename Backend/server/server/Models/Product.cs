@@ -31,6 +31,8 @@ namespace server.Models
 
         public string code { get; set; }
 
+        public DateTime createdDate { get; set; }
+
         [DefaultValue(1)]
         public int capacity { get; set; }
 

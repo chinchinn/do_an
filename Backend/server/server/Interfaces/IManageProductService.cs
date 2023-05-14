@@ -21,8 +21,6 @@ namespace server.Interfaces
         Task<PagedResult<ProductViewModel>> GetAllPaging(GetProductPagingRequest request);
         Task<List<ProductViewModel>> searchProduct(ProductSearchRequest request);
         Task<string> SaveFile(IFormFile file);
-
-
-
+        Task<bool> ChangeStatus(int productId);
     }
 }

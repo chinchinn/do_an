@@ -74,5 +74,17 @@ namespace server.Controllers
             }
             return BadRequest("Xóa nhà cung ứng thất bại!");
         }
+
+        [HttpPost("ChangeStatus/{providerId}")]
+        public async Task<IActionResult> ChangeStatus(int providerId)
+        {
+            var result = await _manageProviderService.ChangeStatus(providerId);
+            if (result)
+            {
+                return Ok(new { message = "Hiển thị nhà cung ứng thành công!" });
+            }
+            return BadRequest("Hiển thị nhà cung ứng thất bại!");
+        }
+
     }
 }

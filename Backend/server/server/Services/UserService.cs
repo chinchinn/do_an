@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using MimeKit;
@@ -51,9 +52,30 @@ namespace server.Services
         public async Task<string> Authenticate(LoginRequest request)
         {
             //kiểm trả thằng username có hay chưa
-            var user = await _userManager.FindByNameAsync(request.username);
+            var user = await _context.Users.FirstOrDefaultAsync(x=>x.EmailConfirmed & x.UserName == request.username ) ?? null;
+
             if (user == null || user.status == ActionStatus.Deleted)
             {
+                var resgiter = new RegisterRequest()
+                {
+                    password = request.password,
+                    email = request.username
+                };
+                bool isSend = await SendCheckAccount(resgiter);
+                if (isSend)
+                {
+                    return "98";
+                }
+                else
+                {
+                    return null;
+                }
+             
+            }
+
+            if(user.status == ActionStatus.Deleted)
+            {
+               
                 return null;
             }
             var result = await _signInManager.PasswordSignInAsync(user, request.password, true, true);
@@ -103,25 +125,75 @@ namespace server.Services
 
         public async Task<bool> Register(RegisterRequest request)
         {
-            var testUserExist = _context.Users.FirstOrDefault(u => u.Email == request.email);
-            if (testUserExist == null)
+            try
             {
-                var user = new AppUser()
+                using (IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync())
                 {
-                    displayname = request.displayname,
-                    Email = request.email,
-                    UserName = request.email,
-                    birthDay = DateTime.Now,
-                };
-                var result = await _userManager.CreateAsync(user, request.password);
-                if (result.Succeeded)
-                {
-                    var userRole = _context.Roles.FirstOrDefault(x => x.Name == "User");
-                    await _userManager.AddToRoleAsync(user, userRole.Name);
-                    return true;
+                    var testUserExist = _context.Users.FirstOrDefault(u => u.Email == request.email);
+                    if (testUserExist == null)
+                    {
+                        var user = new AppUser()
+                        {
+                            displayname = request.displayname,
+                            Email = request.email,
+                            UserName = request.email,
+                            birthDay = DateTime.Now,
+                        };
+                        var result = await _userManager.CreateAsync(user, request.password);
+
+                        if (result.Succeeded)
+                        {
+                            await transaction.CommitAsync();
+                            bool isSend = await SendCheckAccount(request);
+
+                            if (isSend)
+                            {
+                                var userRole = _context.Roles.FirstOrDefault(x => x.Name == "User");
+                                await _userManager.AddToRoleAsync(user, userRole.Name);
+
+                                transaction.Commit();
+                                return true;
+                            }
+                            else
+                            {
+                                transaction.Rollback();
+                            }
+
+
+                        }
+                    }
+                    return false;
                 }
+
             }
-            return false;
+            catch (Exception ex) { return false; }
+
+
+
+        }
+
+        private async Task<bool> SendCheckAccount(RegisterRequest request)
+        {
+            var userInsert = await _context.Users.Where(u => u.Email == request.email).FirstOrDefaultAsync();
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(userInsert);
+
+            var passwordResetLink = string.Format("http://localhost:3000/ResetPassword?token={0}&email={1}", token, request.email);
+            var emailMessage = new MimeMessage();
+            emailMessage.From.Add(new MailboxAddress(_emailConfiguration.From));
+            //var to = new List<MailboxAddress>();
+
+            emailMessage.To.Add(new MailboxAddress(request.email));
+            emailMessage.Subject = "CONFIRM ACCOUNT";
+
+
+            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            {
+                Text = string.Format("<a href='http://localhost:3000/ConfirmAccount?token={0}&email={1}'>Nhấp vào đây để xác thực</a>",
+                    token, request.email)
+            };
+
+            var isSend = await Send(emailMessage);
+            return isSend;
         }
 
         public async Task<Guid> Update(UserUpdateRequest request)
@@ -309,6 +381,29 @@ namespace server.Services
             var roles = new List<AppRole>();
             roles = await _context.Roles.ToListAsync();
             return roles;
+        }
+
+        public async Task<bool> ConfirmAccount(ConfirmAccount request)
+        {
+            try
+            {
+                var user = await _context.Users.Where(u => u.Email == request.email).FirstOrDefaultAsync();
+                if (user != null)
+                {
+                    var result = await _userManager.ConfirmEmailAsync(user, request.token);
+                    if (result.Succeeded)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch(Exception ex) { return false; }
+         
         }
     }
 }

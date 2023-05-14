@@ -3,8 +3,8 @@ import Header from '../../../components/common/Header';
 import Sidebar from '../../../components/common/Sidebar';
 import '../../../components/common/styleCommon/Content.css';
 import BreadScrumb from '../../../components/breadScrumb/BreadScrumb';
-import {Row, Col, Table, Button, Popconfirm, Spin, message, DatePicker, Input} from 'antd';
-import {EditOutlined, RotateLeftOutlined, DeleteOutlined, SearchOutlined, SyncOutlined} from '@ant-design/icons';
+import { Row, Col, Table, Button, Popconfirm, Spin, message, DatePicker, Input } from 'antd';
+import { EditOutlined, RotateLeftOutlined, DeleteOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import axiosInstance from '../../../utils/axiosInstance';
 import queryString from 'querystring';
@@ -25,7 +25,7 @@ function formatMomentArray(arrayMoment) {
 
 
 export default class OrderedManage extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             orderSuccessList: [],
@@ -45,18 +45,19 @@ export default class OrderedManage extends Component {
         }
     }
     //load api
-    callApi = async() => {
+    callApi = async () => {
         this.setState({
             isLoading: true
         })
         let order = await axiosInstance(`ManageOrder/GetAllOrderSuccess`, 'GET')
-        .then(res => res.data);
+            .then(res => res.data);
         const formatList = [...order].map((ele) => {
-            return {id: ele.id,
+            return {
+                id: ele.id,
                 address: ele.address,
                 createDate: ele.createDate,
                 //email: ele.email,
-                customer: !!ele.guess? ele.guess:ele.user.displayname,
+                customer: !!ele.guess ? ele.guess : ele.user.displayname,
                 note: ele.note,
                 contact: [ele.email, ele.phone],
                 //phone: ele.phone,
@@ -70,7 +71,7 @@ export default class OrderedManage extends Component {
                 key: ele.id
             }
         })
-       
+
         this.setState({
             orderSuccessList: formatList,
             isLoading: false,
@@ -79,16 +80,16 @@ export default class OrderedManage extends Component {
         })
     }
     //
-    async componentDidMount(){
+    async componentDidMount() {
         await this.callApi();
     }
     //xem chi tiết
-    handleViewDetail = async(record) => {
+    handleViewDetail = async (record) => {
         console.log(record.note);
         let list = await axiosInstance(`ManageOrder/GetOrderDetailByOrderId?${queryString.stringify({
             orderId: record.id
-        })}`,'GET')
-        .then(res => res.data);
+        })}`, 'GET')
+            .then(res => res.data);
         const orderDetails = list.map((ele) => {
             return {
                 id: ele.id,
@@ -113,25 +114,25 @@ export default class OrderedManage extends Component {
         })
     }
     //hide modal detail
-    handleCancel(value){
+    handleCancel(value) {
         this.setState({
             visible: value,
         })
     }
     //
-    handleChangePicker(momentDate, stringDate){
+    handleChangePicker(momentDate, stringDate) {
         this.setState({
             rangePicker: momentDate,
         })
     }
     //
-    handleChangeInput(e){
+    handleChangeInput(e) {
         this.setState({
             keyWord: e.target.value,
         })
     }
     //
-    async handleReset(){
+    async handleReset() {
         await this.callApi();
     }
     //
@@ -139,22 +140,23 @@ export default class OrderedManage extends Component {
         this.setState({
             isLoading: true
         });
-        const {keyWord, rangePicker} = this.state;
+        const { keyWord, rangePicker } = this.state;
         const dates = formatMomentArray(rangePicker);
-        let list = await axiosInstance('ManageOrder/SearchProduct', 'POST', 
-        {keyWord: keyWord, startDate: dates[0], endDate: dates[1], status: 3})
-        .then(res => res.data).catch(err => {
-            message.error('Tìm kiếm thất bại!', 4);
-            this.setState({
-                isLoading: false,
+        let list = await axiosInstance('ManageOrder/SearchProduct', 'POST',
+            { keyWord: keyWord, startDate: dates[0], endDate: dates[1], status: 3 })
+            .then(res => res.data).catch(err => {
+                message.error('Tìm kiếm thất bại!', 4);
+                this.setState({
+                    isLoading: false,
+                });
             });
-        });
         const formatList = [...list].map((ele) => {
-            return {id: ele.id,
+            return {
+                id: ele.id,
                 address: ele.address,
                 createDate: ele.createDate,
                 //email: ele.email,
-                customer: !!ele.guess? ele.guess:ele.user.displayname,
+                customer: !!ele.guess ? ele.guess : ele.user.displayname,
                 note: ele.note,
                 contact: [ele.email, ele.phone],
                 //phone: ele.phone,
@@ -167,7 +169,7 @@ export default class OrderedManage extends Component {
                 key: ele.id
             }
         })
-        
+
         this.setState({
             orderSuccessList: formatList,
             isLoading: false,
@@ -176,9 +178,9 @@ export default class OrderedManage extends Component {
     render() {
         //
         //
-        const {orderSuccessList, visible, orderDetailList, isLoading, customerItem, feeShip, 
-            visibleCancel , orderId , note} = this.state;
-        
+        const { orderSuccessList, visible, orderDetailList, isLoading, customerItem, feeShip,
+            visibleCancel, orderId, note } = this.state;
+
         //
         const columns = [
             {
@@ -188,13 +190,13 @@ export default class OrderedManage extends Component {
                 width: '12%',
                 render: text => <span>{text}</span>,
             },
-            
+
             {
                 title: 'LIÊN HỆ',
                 key: 'contact',
                 dataIndex: 'contact',
                 width: '12%',
-                render: text => text.map((e, i) => {return <div key={i}>{e}</div>})
+                render: text => text.map((e, i) => { return <div key={i}>{e}</div> })
             },
             {
                 title: 'ĐỊA CHỈ',
@@ -224,94 +226,94 @@ export default class OrderedManage extends Component {
                 dataIndex: 'deliveryDate',
                 render: text => <span >{moment(text).format('DD/MM/YYYY')}</span>
             },
-            
+
             {
                 title: 'TÙY CHỌN',
                 key: 'action',
                 align: 'center',
                 width: '28%',
                 render: (text, record, index) => (
-                  <span>
-        
-                    <Button type="primary" icon={<EditOutlined />}
-                      onClick={() => this.handleViewDetail(record)}>Chi tiết</Button>
-                    
-                  </span>
+                    <span>
+
+                        <Button type="primary" icon={<EditOutlined />}
+                            onClick={() => this.handleViewDetail(record)}>Chi tiết</Button>
+
+                    </span>
                 ),
-              },
+            },
         ];
-        
+
         return (
             <>
-            <Header></Header>   
+                <Header></Header>
                 <div className="main_container">
                     <Sidebar isActive="1"></Sidebar>
                     <div className="content">
                         <BreadScrumb title="Đơn hàng thành công"></BreadScrumb>
                         <br></br>
-                        <Row style={{marginTop: 10}}>
-                            
+                        <Row style={{ marginTop: 10 }}>
+
                             <Col span={8}>
                                 <Col span={16} offset={6}>
-                                <Input
-                                    
-                                    placeholder="Search..."
-                                    value={this.state.keyWord}
-                                    allowClear={true}
-                                    onChange={this.handleChangeInput.bind(this)}
-                                />
+                                    <Input
+
+                                        placeholder="Search..."
+                                        value={this.state.keyWord}
+                                        allowClear={true}
+                                        onChange={this.handleChangeInput.bind(this)}
+                                    />
                                 </Col>
-                                
+
                             </Col>
                             <Col span={7}>
-                                
-                                <RangePicker 
-                                value={this.state.rangePicker}
-                                onChange={this.handleChangePicker.bind(this)}/>
+
+                                <RangePicker
+                                    value={this.state.rangePicker}
+                                    onChange={this.handleChangePicker.bind(this)} />
                             </Col>
                             <Col span={2}>
-                                <Button style={{borderColor: '#0050b3', color: '#0050b3'}} icon={<SearchOutlined />}
-                                onClick={this.handleSearch.bind(this)}
+                                <Button style={{ borderColor: '#0050b3', color: '#0050b3' }} icon={<SearchOutlined />}
+                                    onClick={this.handleSearch.bind(this)}
                                 >
-                                    Search
+                                    Tìm kiếm
                                 </Button>
-                            
+
                             </Col>
                             <Col span={7}>
-                                
-                                <Button onClick={this.handleReset.bind(this)} icon={<SyncOutlined />}>Reset</Button>
-                                
+
+                                <Button onClick={this.handleReset.bind(this)} icon={<SyncOutlined />}>Xóa</Button>
+
                             </Col>
-                            
+
                         </Row>
                         <br></br>
                         <Row>
                             <Col span={24}>
-                                <Table style={{ margin: '10px' }} 
-                                columns={columns}
-                                dataSource={orderSuccessList}
-                                pagination={{
-                                    position: ["bottomCenter", "bottomCenter"],
-                                    defaultPageSize: this.state.pageSize,
-                                    defaultCurrent: this.state.pageDefault
-                                }}
+                                <Table style={{ margin: '10px' }}
+                                    columns={columns}
+                                    dataSource={orderSuccessList}
+                                    pagination={{
+                                        position: ["bottomCenter", "bottomCenter"],
+                                        defaultPageSize: this.state.pageSize,
+                                        defaultCurrent: this.state.pageDefault
+                                    }}
                                 >
 
                                 </Table>
                             </Col>
                             {/*Modal Detail */}
-                        {
-                            visible ?
-                            <ModalViewOrderDetail 
-                            visible={visible} 
-                            onCancel={this.handleCancel.bind(this)}
-                            data={orderDetailList}
-                            feeShip={feeShip}
-                            customer={customerItem}
-                            note={note}
-                            >
-                            </ModalViewOrderDetail> : null
-                        }
+                            {
+                                visible ?
+                                    <ModalViewOrderDetail
+                                        visible={visible}
+                                        onCancel={this.handleCancel.bind(this)}
+                                        data={orderDetailList}
+                                        feeShip={feeShip}
+                                        customer={customerItem}
+                                        note={note}
+                                    >
+                                    </ModalViewOrderDetail> : null
+                            }
                         </Row>
                     </div>
                 </div>

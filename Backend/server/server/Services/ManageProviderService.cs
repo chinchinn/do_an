@@ -57,9 +57,24 @@ namespace server.Services
             return await _context.SaveChangesAsync();
         }
 
+
+        public async Task<bool> ChangeStatus(int providerId)
+        {
+            var provider = await _context.providers.FindAsync(providerId);
+            if (provider == null)
+            {
+                throw new ShopException($"Cannot find any provider to this provider id {providerId}!");
+            }
+            //đổi cờ ko xóa
+            provider.status = ActionStatus.Display;
+            _context.Entry(provider).State = EntityState.Modified;
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+
         public async Task<List<ProviderViewModel>> GetAll()
         {
-            return await _context.providers.Where(i => i.status == ActionStatus.Display).Select(rs => new ProviderViewModel
+            return await _context.providers.Select(rs => new ProviderViewModel
             {
                 id = rs.id,
                 name = rs.name,

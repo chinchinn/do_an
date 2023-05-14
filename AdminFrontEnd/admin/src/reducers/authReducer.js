@@ -91,7 +91,7 @@ const authReducer = (state = initialState, action) => {
                 return {
                     ...state,
                     isLoading: false,
-                    isAuthenticated: false
+                isAuthenticated: false
                 }
             }
             

@@ -5,11 +5,19 @@ import '../../../components/common/styleCommon/Content.css';
 import BreadScrumb from '../../../components/breadScrumb/BreadScrumb';
 import Chart from "react-apexcharts";
 import axiosInstance from '../../../utils/axiosInstance';
-import { Row, Col, Select, Button } from 'antd';
+import { Row, Col, Select, Button, DatePicker } from 'antd';
 import ModalRevenue from '../../../components/statistics/modalRevenue/ModalRevenue'
+import moment from 'moment';
 
 const { Option } = Select;
+const { RangePicker } = DatePicker;
 
+function formatMomentArray(arrayMoment) {
+  let result = arrayMoment.map((ele) => {
+    return moment(ele._d).format('YYYY/MM/DD');
+  })
+  return result;
+}
 export default class StatisticsRevenue extends Component {
   constructor(props) {
     super(props);
@@ -28,11 +36,16 @@ export default class StatisticsRevenue extends Component {
       tables: [],
       totalRevenue: 0,
       visible: false,
+      optionTime: false,
+      toDate: null,
+      fromDate: null,
+
     };
   }
   callApi = async () => {
-    const { option, month, year } = this.state;
-    let data = await axiosInstance('Statistics', 'POST', { option: option, month: month, year: year })
+   
+    const { option, month, year, toDate, fromDate, optionTime } = this.state;
+    let data = await axiosInstance('Statistics', 'POST', { option: option, month: month, year: year, toDate: toDate, fromDate: fromDate, optionTime: optionTime })
       .then(res => { return res.data })
     let labels = data.map(e => e.date);
     let countOrders = data.map(e => e.countOrder);
@@ -67,8 +80,9 @@ export default class StatisticsRevenue extends Component {
   }
   async handleClickStatisticsButton() {
     await this.callApi();
-
   }
+
+
   //
   handleViewDetailStatistics() {
     this.setState({
@@ -81,8 +95,14 @@ export default class StatisticsRevenue extends Component {
       visible: false,
     })
   }
+
+  handleOptionTime() {
+    this.setState({
+      optionTime: !this.state.optionTime
+    })
+  }
   render() {
-    const { option, month, year, labels, countOrders, sumRevenues, tables, visible, pageSize, pageDefault } = this.state;
+    const { option, month, year, labels, countOrders, sumRevenues, tables, visible, pageSize, pageDefault, optionTime, toDate, fromDate } = this.state;
     const series = [
       {
         name: 'Doanh thu',
@@ -129,7 +149,7 @@ export default class StatisticsRevenue extends Component {
       },
       labels: labels,
       xaxis: {
-        title: { text: option === 0 ? `Các tháng trong năm ${year}` : `Các ngày trong tháng ${month} / ${year}` },
+        title: { text: optionTime ? `Doanh thu từ ngày ${fromDate ? fromDate : 'DD/MM/YYYY'} đến ngày ${toDate ? toDate : 'DD/MM/YYYY'} ` : option === 0 ? `Các tháng trong năm ${year}` : `Các ngày trong tháng ${month} / ${year}` },
         type: 'month',
 
       },
@@ -161,8 +181,19 @@ export default class StatisticsRevenue extends Component {
               type="line"
               height="550"
             />
+
             <Row style={{ background: '#fafafa', padding: '10px' }}>
-              <Col offset={3}>
+              {this.state.optionTime ? <Col span={5} offset={1}>
+
+                <RangePicker onChange={(value) => {
+                  var array = formatMomentArray(value);
+                  this.setState({
+                    fromDate: array[0],
+                    toDate: array[1]
+                  });
+                }} format={'DD/MM/YYYY'}
+                />
+              </Col> : <><Col offset={3}>
                 <Select defaultValue={option}
                   onChange={this.handleChangeOption.bind(this)}
                   style={{ width: 200 }}
@@ -171,38 +202,40 @@ export default class StatisticsRevenue extends Component {
                   <Option value={0}>Các Tháng trong năm</Option>
                 </Select>
               </Col>
-              <Col offset={1}>
-                <Select defaultValue={month}
-                  onChange={this.handleChangeMonth.bind(this)}
-                  style={{ width: 200 }}
-                >
-                  <Option value={1}>Tháng 1</Option>
-                  <Option value={2}>Tháng 2</Option>
-                  <Option value={3}>Tháng 3</Option>
-                  <Option value={4}>Tháng 4</Option>
-                  <Option value={5}>Tháng 5</Option>
-                  <Option value={6}>Tháng 6</Option>
-                  <Option value={7}>Tháng 7</Option>
-                  <Option value={8}>Tháng 8</Option>
-                  <Option value={9}>Tháng 9</Option>
-                  <Option value={10}>Tháng 10</Option>
-                  <Option value={11}>Tháng 11</Option>
-                  <Option value={12}>Tháng 12</Option>
-                </Select>
-              </Col>
-              <Col offset={1}>
-                <Select defaultValue={year}
-                  onChange={this.handleChangeYear.bind(this)}
-                  style={{ width: 200 }}
-                >
-                  <Option value={2023}>2023</Option>
-                  <Option value={2022}>2022</Option>
-                  <Option value={2021}>2021</Option>
-                  <Option value={2020}>2020</Option>
-                  <Option value={2019}>2019</Option>
+                <Col offset={1}>
+                  <Select defaultValue={month}
+                    onChange={this.handleChangeMonth.bind(this)}
+                    style={{ width: 200 }}
+                  >
+                    <Option value={1}>Tháng 1</Option>
+                    <Option value={2}>Tháng 2</Option>
+                    <Option value={3}>Tháng 3</Option>
+                    <Option value={4}>Tháng 4</Option>
+                    <Option value={5}>Tháng 5</Option>
+                    <Option value={6}>Tháng 6</Option>
+                    <Option value={7}>Tháng 7</Option>
+                    <Option value={8}>Tháng 8</Option>
+                    <Option value={9}>Tháng 9</Option>
+                    <Option value={10}>Tháng 10</Option>
+                    <Option value={11}>Tháng 11</Option>
+                    <Option value={12}>Tháng 12</Option>
+                  </Select>
+                </Col>
 
-                </Select>
-              </Col>
+                <Col offset={1}>
+                  <Select defaultValue={year}
+                    onChange={this.handleChangeYear.bind(this)}
+                    style={{ width: 200 }}
+                  >
+                    <Option value={2023}>2023</Option>
+                    <Option value={2022}>2022</Option>
+                    <Option value={2021}>2021</Option>
+                    <Option value={2020}>2020</Option>
+                    <Option value={2019}>2019</Option>
+
+                  </Select>
+                </Col></>}
+
               <Col offset={1}>
                 <Button type="primary" onClick={this.handleClickStatisticsButton.bind(this)}>Thống kê</Button>
               </Col>
@@ -210,6 +243,10 @@ export default class StatisticsRevenue extends Component {
                 <Button style={{ background: '#52c41a', border: '1px solid #52c41a' }}
                   type="primary" onClick={this.handleViewDetailStatistics.bind(this)}>Xem Chi tiết</Button>
               </Col>
+              <Col offset={1}>
+                <Button type="default" onClick={this.handleOptionTime.bind(this)}>Đổi lựa chọn kiểu ngày thống kê</Button>
+              </Col>
+
             </Row>
             {visible ? <ModalRevenue visible={visible}
               tables={tables}

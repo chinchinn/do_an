@@ -163,5 +163,17 @@ namespace server.Controllers
             return Ok(data);
         }
 
+
+        [HttpPost("ChangeStatus/{productId}")]
+        public async Task<IActionResult> ChangeStatus(int productId)
+        {
+            var data = await _manageProductService.ChangeStatus(productId);
+            if (!data)
+            {
+                return BadRequest();
+            }
+            return Ok(data);
+        }
+
     }
 }

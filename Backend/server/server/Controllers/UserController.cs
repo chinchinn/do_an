@@ -33,6 +33,11 @@ namespace server.Controllers
             if(string.IsNullOrEmpty(resultToken)){
                 return BadRequest("username hoặc password sai!");
             }
+            if(resultToken == "98")
+            {
+                return BadRequest("Tài khoản đang đợi active vui lòng check email");
+
+            }
             return Ok(new {token = resultToken });
         }
         [HttpPost("register")]
@@ -108,6 +113,17 @@ namespace server.Controllers
             
             return Ok(data);
         }
+
+        [HttpPost("ConfirmAccount")]
+        public async Task<IActionResult> ConfirmAccount(ConfirmAccount request)
+        {
+            var check = await _userService.ConfirmAccount(request);
+          
+            return Ok(check);
+        }
+
+
+
 
 
     }

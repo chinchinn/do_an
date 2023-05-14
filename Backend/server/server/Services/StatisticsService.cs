@@ -7,9 +7,11 @@ using server.Models;
 using server.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace server.Services
@@ -35,12 +37,12 @@ namespace server.Services
             try
             {
                 int addressStartContent = 1;
-                using(var excelPackage = new ExcelPackage(stream ?? new MemoryStream()))
+                using (var excelPackage = new ExcelPackage(stream ?? new MemoryStream()))
                 {
                     excelPackage.Workbook.Worksheets.Add("Product List");
                     var worksheet = excelPackage.Workbook.Worksheets[1];
                     //BuilderHeader(worksheet, headers, "PRODUCT LIST");
-                    for(int i = 0; i < listObj.Count; i++)
+                    for (int i = 0; i < listObj.Count; i++)
                     {
                         var item = listObj[i];
                         worksheet.Cells[addressStartContent, 1].Value = item.name;
@@ -80,7 +82,8 @@ namespace server.Services
             {
                 data = data.Where(x => x.amount >= fromAmount && x.amount <= request.toAmount.Value);
             }
-            return data.Select(rs => new ProductViewModel { 
+            return data.Select(rs => new ProductViewModel
+            {
                 id = rs.id,
                 name = rs.name,
                 price = rs.price,
@@ -91,22 +94,44 @@ namespace server.Services
 
         public List<ProductStatisticViewModel> GetListProductOrder(ProductStatisticSearchRequest request)
         {
-            var products = _context.products.Where(e => e.status == enums.ActionStatus.Display).Select(y => new ProductStatisticViewModel
+            if (!String.IsNullOrEmpty(request.toDate) && !String.IsNullOrEmpty(request.fromDate))
             {
-                productId = y.id,
-                name = y.name,
-                sale = y.sale,
-                price = y.price,
-                saledAmount = _context.orderDetails.Where(x => x.productId == y.id).Sum(z => z.quantity)
-            });
-            return products.ToList();
+                CultureInfo culture = new CultureInfo("en-US");
+                var toDate = Convert.ToDateTime(request.toDate, culture);
+
+                var fromDate = Convert.ToDateTime(request.fromDate, culture);
+                var products = _context.products.Where(e => e.status == enums.ActionStatus.Display & e.createdDate <= toDate & e.createdDate >= fromDate).Select(y => new ProductStatisticViewModel
+                {
+                    productId = y.id,
+                    name = y.name,
+                    sale = y.sale,
+                    price = y.price,
+                    saledAmount = _context.orderDetails.Where(x => x.productId == y.id).Sum(z => z.quantity)
+                });
+                return products.ToList();
+
+            }
+            else
+            {
+
+                var products = _context.products.Where(e => e.status == enums.ActionStatus.Display).Select(y => new ProductStatisticViewModel
+                {
+                    productId = y.id,
+                    name = y.name,
+                    sale = y.sale,
+                    price = y.price,
+                    saledAmount = _context.orderDetails.Where(x => x.productId == y.id).Sum(z => z.quantity)
+                });
+                return products.ToList();
+            }
+
         }
         private async Task<int> TotalProductInOrder(ProductStatisticSearchRequest request, int productId)
         {
             Expression<Func<Order, bool>> expression = x => DateTime.Compare(DateTime.Parse(request.fromDate), x.deliveryDate) <= 0
                 && DateTime.Compare(DateTime.Parse(request.toDate), x.deliveryDate) >= 0;
             var total = _context.orderDetails.Where(x => x.productId == productId);
-            if(request.toDate != null && request.fromDate != null)
+            if (request.toDate != null && request.fromDate != null)
             {
                 var order = _context.orders.Where(expression).ToList();
                 total = from od in total
@@ -119,7 +144,7 @@ namespace server.Services
 
         public IQueryable<ProductViewModel> ProductStatistics(ProductStatisticsRequest request)
         {
-            if(request.status == enums.HotStatus.Empty)
+            if (request.status == enums.HotStatus.Empty)
             {
                 var query = (from p in _context.products
                              where p.amount < 20 && p.status == enums.ActionStatus.Display
@@ -147,16 +172,16 @@ namespace server.Services
                 query = query.Count() > 20 ? query.Take(20) : query;
                 return query;
             }
-            
+
         }
 
         public IQueryable<RevenueStatisticsViewModel> RevenueStatistics(RevenueStatisticsRequest request)
         {
-            if (request.option == enums.DayOrMonth.DaysInMonth)
+            if (request.optionTime)
             {
                 var rp = from o in _context.orders
                          group o by o.createDate.Date into g
-                         where g.Key.Month == request.month && g.Key.Year == request.year
+                         where g.Key.Date <= request.toDate && g.Key.Date >= request.fromDate
                          select new RevenueStatisticsViewModel
                          {
                              date = g.Key.ToString("dd/MM/yyyy"),
@@ -164,22 +189,39 @@ namespace server.Services
                              sumRevenue = g.Sum(x => x.total)
                          };
                 return rp;
-
             }
             else
             {
-                var rp = from i in _context.orders
-                         where i.createDate.Year == request.year
-                         group i by i.createDate.Month into h
+                if (request.option == enums.DayOrMonth.DaysInMonth)
+                {
+                    var rp = from o in _context.orders
+                             group o by o.createDate.Date into g
+                             where g.Key.Month == request.month && g.Key.Year == request.year
+                             select new RevenueStatisticsViewModel
+                             {
+                                 date = g.Key.ToString("dd/MM/yyyy"),
+                                 countOrder = g.Count(),
+                                 sumRevenue = g.Sum(x => x.total)
+                             };
+                    return rp;
 
-                         select new RevenueStatisticsViewModel
-                         {
-                             date = "Tháng "+ h.Key.ToString(),
-                             countOrder = h.Count(),
-                             sumRevenue = h.Sum(x => x.total)
-                         };
-                return rp;
+                }
+                else
+                {
+                    var rp = from i in _context.orders
+                             where i.createDate.Year == request.year
+                             group i by i.createDate.Month into h
+
+                             select new RevenueStatisticsViewModel
+                             {
+                                 date = "Tháng " + h.Key.ToString(),
+                                 countOrder = h.Count(),
+                                 sumRevenue = h.Sum(x => x.total)
+                             };
+                    return rp;
+                }
             }
+
         }
 
         public List<StatusOrderStatistics> StatusOrderStatistics()
@@ -188,7 +230,7 @@ namespace server.Services
             var queryShipping = _context.orders.Where(a => a.status == enums.OrderStatus.Shipping).Count();
             var queryNotConfirm = _context.orders.Where(a => a.status == enums.OrderStatus.NotConfirm).Count();
             var queryCancel = _context.orders.Where(a => a.status == enums.OrderStatus.Cancel).Count();
-            return new List<StatusOrderStatistics>() { 
+            return new List<StatusOrderStatistics>() {
                 new StatusOrderStatistics(){ status = "Thành công", count = querySuccess},
                 new StatusOrderStatistics(){ status = "Đang vận chuyển", count = queryShipping},
                 new StatusOrderStatistics(){ status = "Chưa duyệt", count = queryNotConfirm},

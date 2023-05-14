@@ -15,5 +15,6 @@ namespace server.Interfaces
         Task<ProviderViewModel> getProviderById(int categoryId);
         Task<List<ProviderViewModel>> GetAll();
         Task<List<ProviderViewModel>> Search(string search);
+        Task<bool> ChangeStatus(int providerId);
     }
 }
