@@ -12,7 +12,7 @@ function formatEvaluationList(arr, userId) {
     let temp = arr.map((ele) => {
         return { ...ele, isOwn: ele.status === 2 && ele.userId === userId ? true : false }
     })
-    return temp.filter(ele => { return ele.status === 0 || ele.isOwn === true })
+    return temp.filter(ele => { return ele.status === 2 || ele.isOwn === true })
 }
 class ListEvaluation extends Component {
     componentDidMount() {
@@ -25,7 +25,7 @@ class ListEvaluation extends Component {
         console.log("format", evaluationFormat);
         let evaluationList = (
             evaluationFormat.length > 0 && evaluationFormat.map(ele => {
-                return <DisplayEvaluation key={ele.id} item={ele}></DisplayEvaluation>
+                return <DisplayEvaluation key={ele?.id} item={ele}></DisplayEvaluation>
             })
         )
         return (
