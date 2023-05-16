@@ -10,5 +10,7 @@ namespace server.ViewModel
         public string date { get; set; }
         public int countOrder { get; set; }
         public long sumRevenue { get; set; }
+        public long sumTotal { get; set; }
+
     }
 }

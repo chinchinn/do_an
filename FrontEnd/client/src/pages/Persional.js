@@ -183,7 +183,7 @@ class Persional extends Component {
                                         key="2"
                                     >
                                         <OrderHistory onHandleView={(value) => {
-                                            debugger;
+
                                             this.handleViewDetail(value);
                                         }} userId={this.state.user.id} ></OrderHistory>
                                     </TabPane>

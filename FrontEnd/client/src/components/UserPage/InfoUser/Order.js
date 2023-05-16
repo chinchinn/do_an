@@ -15,7 +15,7 @@ export default class Order extends Component {
 
 
     handleViewDetail(record) {
-        debugger;
+
         this.props.onHandleViewDetail(record);
     }
     render() {

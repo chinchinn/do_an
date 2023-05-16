@@ -30,6 +30,7 @@ class Search extends Component {
       products: [],
       currentPage: 1,
       pageSize: 3,
+      
     };
   }
   async componentDidMount() {

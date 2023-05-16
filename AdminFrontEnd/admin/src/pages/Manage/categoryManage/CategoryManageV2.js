@@ -91,7 +91,7 @@ function CategoryManageV2(props) {
                 }
                 ).catch(err => {
                     message.warning("Thêm danh mục thất bại!", 2)
-                    setDataCategoryManage({  ...dataCategoryManage,isLoading: false, visible: false, });
+                    setDataCategoryManage({ ...dataCategoryManage, isLoading: false, visible: false, });
                 })
 
         }
@@ -131,7 +131,7 @@ function CategoryManageV2(props) {
             })
             .catch(err => {
                 message.warning("Xóa danh mục thất bại!", 2)
-                setDataCategoryManage({  ...dataCategoryManage,isLoading: false });
+                setDataCategoryManage({ ...dataCategoryManage, isLoading: false });
             })
     }
 
@@ -207,7 +207,7 @@ function CategoryManageV2(props) {
         },
         {
             title: (<Button icon={<ImportOutlined />} onClick={() => handleClickBtn()}
-                style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }}>Add category</Button>),
+                style={{ background: "#389e0d", borderColor: "#389e0d", color: 'white' }}>Thêm danh mục</Button>),
             width: '20%',
             key: 'action',
             render: (text, record, index) => (
@@ -215,10 +215,10 @@ function CategoryManageV2(props) {
                 <span>
 
                     <Button type="primary" icon={<EditOutlined />} style={{ marginRight: 10, marginLeft: 10 }}
-                        onClick={() => handleClickBtn(record)}>Update</Button>
+                        onClick={() => handleClickBtn(record)}>Cập nhật</Button>
                     <>
                         <Popconfirm placement="left" title={warn} onConfirm={() => confirmDelete(record)} okText="Yes" cancelText="No">
-                            <Button icon={<DeleteOutlined />} type="danger">Delete</Button>
+                            <Button icon={<DeleteOutlined />} type="danger">Xóa</Button>
                         </Popconfirm>
                     </>
                 </span>

@@ -11,7 +11,7 @@ export const fetch_evaluation = (productId) => {
     return dispatch => {
         dispatch(fetch_loading());
         evaluationApis.getEvaluationsByProductId(productId).then(res => {
-            debugger;
+
             dispatch(fetch_success(res.data));
         })
             .catch(err => {

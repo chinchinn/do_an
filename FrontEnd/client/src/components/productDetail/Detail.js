@@ -20,19 +20,37 @@ class Detail extends Component {
             countItem: 1,
             product: {},
             isMounted: false,
-            mainImage: ''
+            mainImage: '',
+            param: null
         }
 
     }
     componentDidMount() {
+
         axiosInstance(`Product/get-product-by-id/${this.props.productId}`)
             .then(res => this.setState({
                 product: { ...res?.data },
                 isMounted: true,
                 mainImage: res?.data?.images ? res?.data?.images?.[0]?.urlImage : empty,
+                param: this.props.productId
             }))
 
+
     }
+
+    componentDidUpdate() {
+        if (this.state.param !== this.props.productId)
+            axiosInstance(`Product/get-product-by-id/${this.props.productId}`)
+                .then(res => this.setState({
+                    product: { ...res?.data },
+                    isMounted: true,
+                    mainImage: res?.data?.images ? res?.data?.images?.[0]?.urlImage : empty,
+                    param: this.props.productId
+                }))
+
+    }
+
+
     handleClickSubImage(e) {
 
         this.setState({
@@ -70,7 +88,7 @@ class Detail extends Component {
 
     }
     render() {
-        debugger;
+
         const { product, isMounted, mainImage } = this.state;
 
         ;
@@ -126,7 +144,7 @@ class Detail extends Component {
 
                     </div>
                     <div className="main-img-product">
-                        <img width='370' height="370" src={mainImage ? mainImage : empty}
+                        <img width='100%' height="100%" src={mainImage ? mainImage : empty}
                             className="main-img-detail-product" alt="main img" />
                     </div>
 

@@ -25,7 +25,7 @@ class TotalCart extends Component {
     }
 
     handleCheckout() {
-        debugger;
+
         this.setState({
             visibleModal: true,
         })
@@ -40,7 +40,7 @@ class TotalCart extends Component {
         this.props.create_order(order);
     }
     handleShowConfirm = (dataForm) => {
-        debugger;
+
         const carts = JSON.parse(localStorage.getItem('carts'));
 
         const orderDetails = carts.map((ele) => {
@@ -70,7 +70,7 @@ class TotalCart extends Component {
     }
 
     handleSubmitCheckout = () => {
-        debugger;
+
         //this.props.onCreateOrder();
         const carts = JSON.parse(localStorage.getItem('carts'));
         //format orderdetail
@@ -193,7 +193,7 @@ class TotalCart extends Component {
 
                                 }
                                 handleSubmit={(value) => {
-                                    debugger;
+
                                     this.handleSubmitCheckout();
                                 }}
                                 data={orderDetailList}

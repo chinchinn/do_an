@@ -4,6 +4,7 @@ import BreadScrumb from '../components/BreadScrumb/BreadScrumb';
 import TotalCart from '../components/listCart/TotalCart';
 import { Empty } from 'antd';
 import EmptyCart from '../images/empty-cart.png';
+import './Cart.css';
 import { connect } from 'react-redux';
 
 class Cart extends Component {
@@ -37,7 +38,7 @@ class Cart extends Component {
                     <div style={{ maxWidth: '75%', margin: '0 auto' }}>
                         <BreadScrumb title="Giỏ hàng"></BreadScrumb>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '75%', margin: '0 auto', marginTop: ' 100px' }}>
+                    <div className='vs-cart-list' style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '75%', margin: '0 auto', marginTop: ' 100px' }}>
                         <ListCart carts={carts}></ListCart>
                         <TotalCart></TotalCart>
                     </div>

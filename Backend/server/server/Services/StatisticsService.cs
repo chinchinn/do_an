@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using OfficeOpenXml;
 using server.Data;
 using server.Helper.statistics;
@@ -175,7 +176,7 @@ namespace server.Services
 
         }
 
-        public IQueryable<RevenueStatisticsViewModel> RevenueStatistics(RevenueStatisticsRequest request)
+        public List<RevenueStatisticsViewModel> RevenueStatistics(RevenueStatisticsRequest request)
         {
             if (request.optionTime)
             {
@@ -188,7 +189,7 @@ namespace server.Services
                              countOrder = g.Count(),
                              sumRevenue = g.Sum(x => x.total)
                          };
-                return rp;
+                return rp.ToList();
             }
             else
             {
@@ -203,7 +204,7 @@ namespace server.Services
                                  countOrder = g.Count(),
                                  sumRevenue = g.Sum(x => x.total)
                              };
-                    return rp;
+                    return rp.ToList();
 
                 }
                 else
@@ -218,7 +219,7 @@ namespace server.Services
                                  countOrder = h.Count(),
                                  sumRevenue = h.Sum(x => x.total)
                              };
-                    return rp;
+                    return rp.ToList();
                 }
             }
 

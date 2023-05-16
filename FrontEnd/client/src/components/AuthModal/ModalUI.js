@@ -34,7 +34,7 @@ class ModalUI extends Component {
   }
 
   callback(key) {
-    debugger;
+
     this.setState({
       active: key,
     });

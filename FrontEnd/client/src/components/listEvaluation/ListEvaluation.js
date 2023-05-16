@@ -19,7 +19,7 @@ class ListEvaluation extends Component {
         this.props.fetch_evaluations(this.props.productId);
     }
     render() {
-        debugger;
+
         const { evaluations, userId } = this.props;
         const evaluationFormat = formatEvaluationList(evaluations, userId);
         console.log("format", evaluationFormat);

@@ -6,7 +6,7 @@ import 'moment/locale/vi';
 
 export default class DisplayReply extends Component {
     render() {
-        debugger;
+
         const { reply } = this.props;
         console.log(reply)
         return (
@@ -15,7 +15,7 @@ export default class DisplayReply extends Component {
                     <Avatar size="large" icon={<UserOutlined />} style={{ margin: '8px 15px 0 0' }} />
                 </div>
                 <div>
-                    <h6>{reply?.user?.displayname ? (<><CheckCircleOutlined style={{ color: 'green' }} />{reply?.user?.displayname}</>  ) : ""}</h6>
+                    <h6>{reply?.user?.displayname ? (<><CheckCircleOutlined style={{ color: 'green' }} />{reply?.user?.displayname}</>) : ""}</h6>
 
                     <p>
                         {reply.content}

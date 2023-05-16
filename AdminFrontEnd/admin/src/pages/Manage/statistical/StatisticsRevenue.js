@@ -5,9 +5,10 @@ import '../../../components/common/styleCommon/Content.css';
 import BreadScrumb from '../../../components/breadScrumb/BreadScrumb';
 import Chart from "react-apexcharts";
 import axiosInstance from '../../../utils/axiosInstance';
-import { Row, Col, Select, Button, DatePicker } from 'antd';
+import { Row, Col, Select, Button, DatePicker, Card } from 'antd';
 import ModalRevenue from '../../../components/statistics/modalRevenue/ModalRevenue'
 import moment from 'moment';
+import './StatisticsRevenue.css';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -43,7 +44,7 @@ export default class StatisticsRevenue extends Component {
     };
   }
   callApi = async () => {
-   
+
     const { option, month, year, toDate, fromDate, optionTime } = this.state;
     let data = await axiosInstance('Statistics', 'POST', { option: option, month: month, year: year, toDate: toDate, fromDate: fromDate, optionTime: optionTime })
       .then(res => { return res.data })
@@ -170,11 +171,24 @@ export default class StatisticsRevenue extends Component {
 
     return (
       <>
+
         <Header></Header>
         <div className="main_container">
           <Sidebar isActive="9"></Sidebar>
           <div className="content">
+
+
             <BreadScrumb title="Thống kê doanh thu"></BreadScrumb>
+
+            <Row style={{ margin: '24px 0px 0px 24px ' }} >
+              <Col span={8}>
+                <Card title="Thu nhập" color='#001529' className='card-report' bordered={true}>
+                  Tổng thu nhập: {this.state.totalRevenue} đồng
+                </Card>
+              </Col>
+
+            </Row>
+
             <Chart
               options={options}
               series={series}
@@ -183,7 +197,9 @@ export default class StatisticsRevenue extends Component {
             />
 
             <Row style={{ background: '#fafafa', padding: '10px' }}>
-              {this.state.optionTime ? <Col span={5} offset={1}>
+
+
+              {this.state.optionTime ? <Col span={5} offset={1} style={{ paddingRight: 4 }}>
 
                 <RangePicker onChange={(value) => {
                   var array = formatMomentArray(value);
@@ -193,7 +209,7 @@ export default class StatisticsRevenue extends Component {
                   });
                 }} format={'DD/MM/YYYY'}
                 />
-              </Col> : <><Col offset={3}>
+              </Col> : <><Col offset={1}>
                 <Select defaultValue={option}
                   onChange={this.handleChangeOption.bind(this)}
                   style={{ width: 200 }}
@@ -222,7 +238,7 @@ export default class StatisticsRevenue extends Component {
                   </Select>
                 </Col>
 
-                <Col offset={1}>
+                <Col offset={1} style={{ paddingRight: 4 }}>
                   <Select defaultValue={year}
                     onChange={this.handleChangeYear.bind(this)}
                     style={{ width: 200 }}
@@ -236,14 +252,14 @@ export default class StatisticsRevenue extends Component {
                   </Select>
                 </Col></>}
 
-              <Col offset={1}>
+              <Col style={{ paddingRight: 4 }}>
                 <Button type="primary" onClick={this.handleClickStatisticsButton.bind(this)}>Thống kê</Button>
               </Col>
-              <Col offset={1}>
+              <Col style={{ paddingRight: 4 }}>
                 <Button style={{ background: '#52c41a', border: '1px solid #52c41a' }}
                   type="primary" onClick={this.handleViewDetailStatistics.bind(this)}>Xem Chi tiết</Button>
               </Col>
-              <Col offset={1}>
+              <Col style={{ paddingRight: 4 }}>
                 <Button type="default" onClick={this.handleOptionTime.bind(this)}>Đổi lựa chọn kiểu ngày thống kê</Button>
               </Col>
 
@@ -259,7 +275,7 @@ export default class StatisticsRevenue extends Component {
 
           </div>
 
-        </div>
+        </div >
       </>
     )
   }

@@ -266,7 +266,7 @@ export default class ModalViewOrderDetail extends Component {
 
                             </Col>
                             <Col span={1} >
-                                <Button onClick={() => { debugger; this.props.handleSubmit() }}>Xác nhận</Button>
+                                <Button onClick={() => { this.props.handleSubmit() }}>Xác nhận</Button>
 
                             </Col>
                         </Row>

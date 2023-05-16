@@ -81,6 +81,11 @@ class Home extends Component {
             })
             .catch(err => console.log(err + ''))
     }
+
+
+    handleClickViewCollapse(){
+
+    }
     //
     async handleChangePage(page, pageSize) {
         let data = await axiosInstance('Product/Paging', 'POST', { pageCurrent: page, pageSize: pageSize })

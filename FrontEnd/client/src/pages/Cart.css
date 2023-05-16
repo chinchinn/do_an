@@ -1,0 +1,35 @@
+@media screen and (min-width: 320px) and (max-width: 480px) {
+    .vs-cart-list {
+        display: flex;
+        flex-direction: column !important;
+        justify-content: center;
+    }
+
+    .vs-cart-list>div {
+        width: 100% !important;
+    }
+
+    .container-total-cart {
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 4;
+        padding: 12px;
+    }
+}
+
+@media screen and (min-width: 480px) and (max-width: 1024px) {
+    .vs-cart-list {
+        display: flex;
+        flex-direction: column !important;
+        justify-content: center;
+    }
+
+    .vs-cart-list>div {
+        width: 100% !important;
+    }
+
+    .container-total-cart {
+        padding: 4px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+    }
+}
