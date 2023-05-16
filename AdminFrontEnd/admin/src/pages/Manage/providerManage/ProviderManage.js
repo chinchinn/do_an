@@ -100,7 +100,7 @@ export default class ProviderManage extends Component {
             axiosInstance('ManageProvider', 'POST', value)
                 .then(res => {
                     debugger;
-                    if (res?.data.code === 99) {
+                    if (res?.data?.code === 99) {
                         message.error(res?.data?.message, 2)
                         this.setState(prevState => {
                             return {
