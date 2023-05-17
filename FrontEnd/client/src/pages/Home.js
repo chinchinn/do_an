@@ -25,9 +25,13 @@ class Home extends Component {
             isLoadingMainProduct: true,
             //
             isViewMoreMainProduct: false,
+            isViewMoreViewCountProduct: false,
             pageCurrent: 1,
             pageSize: 8,
             totalPage: 0,
+            pageCurrentViewCount: 1,
+            pageSizeViewCount: 8,
+            totalPageViewCount: 0,
         }
     }
     componentDidMount() {
@@ -54,7 +58,7 @@ class Home extends Component {
     }
     handleClickViewMore(value) {
         this.setState({
-
+            isViewMoreViewCountProduct: true,
             isLoadingTopViewProduct: true,
         })
         axiosInstance('Product/products-top-view-count/true')
@@ -83,7 +87,7 @@ class Home extends Component {
     }
 
 
-    handleClickViewCollapse(){
+    handleClickViewCollapse() {
 
     }
     //
@@ -96,15 +100,27 @@ class Home extends Component {
             mainProducts: data,
         })
     }
+
+
+    async handleChangePageViewCount(page, pageSize) {
+        let data = await axiosInstance('Product/Paging/ViewCount', 'POST', { pageCurrent: page, pageSize: pageSize })
+            .then(res => res.data);
+        this.setState({
+            pageCurrentViewCount: page,
+            pageSizeViewCount: pageSize,
+            topViewProducts: data,
+        })
+    }
     render() {
-        const { pageCurrent, pageSize, totalPage } = this.state;
+        const { pageCurrent, pageSize, totalPage, pageCurrentViewCount, pageSizeViewCount, totalPageViewCount } = this.state;
         return (
 
             <div style={{ background: '#f7f7f7' }}>
                 <Banner></Banner>
 
                 <ListProducts title="NHỮNG SẢN PHẨM XEM NHIỀU" onClickViewMore={this.handleClickViewMore.bind(this)}
-                    loading={this.state.isLoadingTopViewProduct} products={this.state.topViewProducts}></ListProducts>
+                    loading={this.state.isLoadingTopViewProduct} pageCurrent={pageCurrentViewCount} pageSize={pageSizeViewCount} totalPage={totalPageViewCount} isViewMore={this.state.isViewMoreViewCountProduct}
+                    onChangePage={this.handleChangePageViewCount.bind(this)} products={this.state.topViewProducts}></ListProducts>
 
                 <ListProducts title="NHỮNG SẢN PHẨM KHÁC" onClickViewMore={this.handleClickViewMoreForMainProduct.bind(this)}
                     loading={this.state.isLoadingMainProduct} products={this.state.mainProducts}

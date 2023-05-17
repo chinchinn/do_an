@@ -18,6 +18,7 @@ class ProductDetail extends Component {
             pageCurrent: 1,
             pageSize: 8,
             totalPage: 0,
+            isViewMoreViewCountProduct: false
         }
     }
 
@@ -33,7 +34,7 @@ class ProductDetail extends Component {
 
     handleClickViewMore(value) {
         this.setState({
-
+            isViewMoreViewCountProduct: true,
             isLoadingTopViewProduct: true,
         })
         axiosInstance('Product/products-top-view-count/true')
@@ -71,7 +72,7 @@ class ProductDetail extends Component {
                     <div className='detail-view'>
                         <ListProducts title="NHỮNG SẢN PHẨM XEM NHIỀU" onClickViewMore={this.handleClickViewMore.bind(this)}
                             loading={this.state.isLoadingTopViewProduct} products={this.state.topViewProducts} pageCurrent={pageCurrent} pageSize={pageSize} totalPage={totalPage}
-                            onChangePage={this.handleChangePage.bind(this)}></ListProducts>
+                            onChangePage={this.handleChangePage.bind(this)} isViewMore={this.state.isViewMoreViewCountProduct}></ListProducts>
                     </div>
 
                     <br></br>

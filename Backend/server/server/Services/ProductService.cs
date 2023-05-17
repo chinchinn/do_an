@@ -256,7 +256,33 @@ namespace server.Services
             return data;
         }
 
+        public async  Task<List<ProductViewModel>> PagingViewCount(ProductPagingRequest request)
+        {
+            var data = await _context.products.Where(x => x.status == ActionStatus.Display)
+                   .OrderByDescending(x => x.viewCount).Take(4)
+               .Select(rs => new ProductViewModel
+               {
+                   id = rs.id,
+                   name = rs.name,
+                   price = rs.price,
+                   importPrice = rs.importPrice,
+                   sale = rs.sale,
+                   categoryId = rs.categoryId,
+                   category = rs.category,
 
+                   amount = rs.amount,
+                   viewCount = rs.viewCount,
+                   description = rs.description,
+                   Evaluations = rs.Evaluations,
+                   Images = rs.Images.Where(p => p.status == ActionStatus.Display).ToList(),
+                   rating = Convert.ToInt32(rs.Evaluations.Average(ave => ave.rating)),
+                   provider = rs.provider,
+                   providerId = rs.providerId,
+                   status = rs.status
+
+               }).Skip((request.pageCurrent - 1) * request.pageSize).Take(request.pageSize).ToListAsync();
+            return data;
+        }
 
         public async Task<List<ProductViewModel>> SearchProducts(Helper.SearchProductRequest request)
         {

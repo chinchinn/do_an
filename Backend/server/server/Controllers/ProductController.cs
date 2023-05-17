@@ -68,5 +68,13 @@ namespace server.Controllers
             var data = await _productService.Paging(request);
             return Ok(data);
         }
+
+
+        [HttpPost("Paging/ViewCount")]
+        public async Task<IActionResult> PagingViewCount(ProductPagingRequest request)
+        {
+            var data = await _productService.Paging(request);
+            return Ok(data);
+        }
     }
 }

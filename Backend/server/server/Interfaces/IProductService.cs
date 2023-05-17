@@ -17,5 +17,6 @@ namespace server.Interfaces
         Task<ProductViewModel> getProductById(int productId);
         Task<List<ProductViewModel>> SearchProducts(Helper.SearchProductRequest request);
         Task<List<CategoryViewModel>> getListCategoryByGeneralityName(string generalityName);
+        Task<List<ProductViewModel>> PagingViewCount(ProductPagingRequest request);
     }
 }
